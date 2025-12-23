@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESSPROOF | The Essence of Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root { --bg: #000000; --panel: rgba(13, 18, 35, 0.95); --glass-border: rgba(255, 255, 255, 0.08); --gold: #d4af37; --gold-light: #f7ef8a; --gold-dark: #855a16; --ink: #e2e8f0; }
+        #modal-dashboard { z-index: 8000 !important; } #modal-repo-detail { z-index: 9000 !important; } #modal-payment { z-index: 9500 !important; } #modal-judiciary-auth, #modal-judiciary-view { z-index: 11000 !important; } #modal-video { z-index: 12000 !important; } #modal-repo-login { z-index: 13000 !important; } 
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; } .logo-font { font-family: 'Cinzel Decorative', serif; } .legal-font { font-family: 'Playfair Display', serif; } .mono-font { font-family: 'JetBrains Mono', monospace; }
+        .glass-panel { background: var(--panel); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); }
+        .gold-btn { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%); color: #fefce8; border: 1px solid #713f12; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; cursor: pointer; position: relative; z-index: 50; }
+        .gold-btn:active { transform: scale(0.96); } .gold-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); background: #333; transform: none; }
+        .input-field { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: white; transition: all 0.3s; }
+        .input-field:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 2px rgba(212,175,55,0.15); }
+        .fade-in { animation: fadeIn 0.5s ease-out; } @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+        .split-container { display: flex; width: 100%; height: 85vh; position: relative; overflow: hidden; }
+        .split-side { flex: 1; position: relative; transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; cursor: pointer; overflow: hidden; background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); color: #fff; }
+        .split-side::before { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity: 0.5; }
+        .split-side:hover { flex: 1.3; }
+        .split-side h2 { color: transparent; background: linear-gradient(to bottom, #f7ef8a, #d4af37); -webkit-background-clip: text; background-clip: text; text-shadow: 0 0 20px rgba(212,175,55,0.3); }
+        .feature-list { list-style: none; padding: 0; margin-top: 20px; text-align: left; width: 80%; max-width: 300px; }
+        .feature-list li { padding: 12px 0; display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #d4af37; opacity: 0.8; border-bottom: 1px solid rgba(212,175,55,0.1); }
+        .btn-action { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%); border: 1px solid #fff; color: #000; padding: 15px 40px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-top: 30px; box-shadow: 0 0 20px rgba(212,175,55,0.4); transition: all 0.3s; }
+        .btn-action:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(212,175,55,0.6); }
+        .side-express { border-right: 1px solid rgba(212, 175, 55, 0.2); } .side-premium { border-left: 1px solid rgba(212, 175, 55, 0.2); }
+        .room-join-bar { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--gold); padding: 9px 15px; border-radius: 50px; display: flex; gap: 8px; align-items: center; z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.6); width: auto; max-width: 270px; }
+        .room-join-bar input { font-size: 15px; } 
+        @media (max-width: 768px) { .split-container { flex-direction: column; height: auto; } .split-side { padding: 3rem 1rem; min-height: 50vh; } .side-express:hover, .side-premium:hover { flex: 1; } .room-join-bar { bottom: 10px; width: 90%; max-width: 90%; } }
+        .scan-line { width: 100%; height: 2px; background: #d4af37; box-shadow: 0 0 10px #d4af37; animation: scan 1.5s infinite linear; } @keyframes scan { 0% {transform: translateY(-50px); opacity:0;} 50% {opacity:1;} 100% {transform: translateY(50px); opacity:0;} }
+        .template-form-group { margin-bottom: 10px; } .template-label { font-size: 10px; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 4px; }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #0b1021; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+        .legal-checkbox { accent-color: var(--gold); width: 16px; height: 16px; margin-top: 3px; cursor: pointer; }
+        #toast-msg { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(13, 18, 35, 0.95); border: 1px solid #d4af37; color: #d4af37; padding: 12px 24px; border-radius: 8px; font-size: 12px; font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 10000; display: none; align-items: center; gap: 10px; }
+        .participant-card { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; transition: all 0.3s; }
+        .participant-card.active-user { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.1); }
+        .icon-box { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-left: 6px; transition: all 0.3s; }
+        .status-gray { color: #475569; background: #1e293b; border: 1px solid #334155; } .status-gold { color: #fefce8; background: var(--gold); border: 1px solid #fefce8; box-shadow: 0 0 8px rgba(212,175,55,0.4); cursor: pointer; } .status-gold:hover { transform: scale(1.1); }
+        .selected-row { background: rgba(212, 175, 55, 0.15) !important; border-left: 4px solid var(--gold); }
+        .paper-view { font-family: 'Times New Roman', serif; color: black; background: #fff; padding: 40px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); min-height: 800px; }
+        .paper-watermark { position: absolute; top: 40%; left: 30%; transform: rotate(-45deg); font-size: 80px; color: rgba(0,0,0,0.05); font-family: 'Cinzel', serif; z-index: 0; pointer-events: none; }
+        .paper-header { text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 20px; margin-bottom: 30px; position: relative; z-index: 1; }
+        .paper-header h1 { font-family: 'Cinzel', serif; font-size: 16px; margin: 0; color: black; }
+        .paper-title { font-size: 18px; text-transform: uppercase; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; font-weight: bold; }
+        .paper-body { white-space: pre-wrap; line-height: 1.6; text-align: justify; font-size: 14px; position: relative; z-index: 1; }
+        .paper-sigs { margin-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; position: relative; z-index: 1; }
+        .paper-sig-block { border-top: 1px solid #000; padding-top: 5px; width: 200px; font-size: 11px; }
+        .paper-hash-box { background-color: #fffbeb; border: 2px solid #d4af37; padding: 10px; margin-top: 40px; text-align: center; font-family: monospace; font-size: 10px; color: #855a16; position: relative; z-index: 1; }
+        .encrypted-view { font-family: monospace; word-break: break-all; color: #34d399; font-size: 11px; background: black; padding: 20px; border: 1px solid #333; max-height: 600px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+    <div id="toast-msg" class="fade-in">
+        <i class="fas fa-check-circle text-[#d4af37] text-lg"></i>
+        <span id="toast-text">REQUEST REGISTERED.</span>
+    </div>
+
+    <header class="border-b border-white/10 bg-[#000000]/90 sticky top-0 z-50 backdrop-blur-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="location.reload()">
+                    <div>
+                        <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#f7ef8a] to-[#d4af37] tracking-[0.1em] logo-font" style="filter: drop-shadow(0px 2px 0px rgba(0,0,0,0.8));">ESSPROOF</h1>
+                        <p class="text-[9px] text-gray-400 uppercase tracking-[0.3em] font-bold">The Essence of Verification | Private Secure Platform</p>
+                    </div>
+                </div>
+                <button onclick="openJudiciaryLogin()" class="hidden md:flex items-center gap-2 text-[14px] bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/30 px-3 py-1.5 rounded hover:bg-[#d4af37]/20 hover:text-white transition ml-4">
+                    <i class="fas fa-scale-balanced"></i> Authorized Access
+                </button>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex flex-col items-end border-r border-white/10 pr-6">
+                    <span class="text-[9px] text-gray-500 uppercase tracking-widest">Chief Legal Architect</span>
+                    <span class="text-[#d4af37] font-serif text-xs italic ">M.A.SHAKIBANIA</span>
+                </div>
+                <button onclick="openDashboard()" class="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition">
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20"><i class="fas fa-folder-open"></i></div>
+                    <span class="hidden sm:inline">Repository</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full flex-grow flex flex-col relative">
+
+        <div id="modal-payment" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-4">
+            <div class="w-full max-w-md bg-[#0f172a] p-0 rounded-xl border border-[#d4af37]/50 shadow-[0_0_60px_rgba(212,175,55,0.15)] relative overflow-hidden flex flex-col">
+                <div class="bg-[#d4af37]/10 border-b border-[#d4af37]/30 p-6 text-center">
+                    <div class="text-[#d4af37] text-4xl mb-2"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h3 class="text-xl text-white brand-font tracking-widest uppercase">Service Fee Calculation</h3>
+                    <p class="text-[10px] text-gray-400 mt-1">PROFORMA INVOICE #<span id="inv-num">--</span></p>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="flex justify-between items-center text-sm border-b border-white/10 pb-2">
+                        <span class="text-gray-400">Processing Tier</span>
+                        <span id="pay-tier" class="text-white font-bold uppercase">--</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">Base Fee (Standard Coverage)</span>
+                        <span id="pay-base" class="text-white font-mono">$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-400">Extra Signatories Fee</span>
+                        <span id="pay-extra" class="text-white font-mono">$0.00</span>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-[#d4af37]/30 flex justify-between items-center">
+                        <span class="text-[#d4af37] text-xs font-bold uppercase tracking-widest">Total Amount Due</span>
+                        <span id="pay-total" class="text-2xl text-[#d4af37] font-mono font-bold">$0.00</span>
+                    </div>
+                </div>
+                <div class="p-6 pt-0">
+                    <button onclick="processPayment()" id="btn-pay-confirm" class="w-full gold-btn py-4 rounded text-xs font-bold uppercase tracking-widest shadow-lg flex justify-center items-center gap-2">
+                        <span>Pay & Proceed to Sign</span> <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <p class="text-[9px] text-center text-gray-600 mt-3"><i class="fas fa-lock mr-1"></i> 256-bit Secure SSL Payment</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-repo-login" class="fixed inset-0 bg-black/95 z-[9000] hidden items-center justify-center p-4">
+            <div class="w-full max-w-sm bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-[0_0_50px_rgba(212,175,55,0.2)] relative text-center">
+                <button onclick="document.getElementById('modal-repo-login').classList.add('hidden'); document.getElementById('modal-repo-login').classList.remove('flex');" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                <div class="w-16 h-16 bg-[#d4af37]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[#d4af37]/50">
+                    <i class="fas fa-user-lock text-3xl text-[#d4af37]"></i>
+                </div>
+                <h3 class="text-xl text-white brand-font mb-2">Identify Yourself</h3>
+                <p class="text-xs text-gray-400 mb-6">Enter your details to access your personal secure vault.</p>
+                <div class="space-y-3 text-left">
+                    <div>
+                        <label class="text-[10px] text-[#d4af37] uppercase font-bold tracking-widest pl-1">Legal Name</label>
+                        <input type="text" id="login-name" class="w-full input-field p-3 text-sm rounded border-[#d4af37]/20 focus:border-[#d4af37]" placeholder="e.g. John Doe">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-[#d4af37] uppercase font-bold tracking-widest pl-1">ID Number</label>
+                        <input type="text" id="login-nid" class="w-full input-field p-3 text-sm rounded border-[#d4af37]/20 focus:border-[#d4af37]" placeholder="Unique Identifier">
+                    </div>
+                    <button onclick="performLogin()" class="w-full gold-btn py-3 rounded text-xs font-bold uppercase tracking-widest shadow-lg mt-2">
+                        Access My Documents
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-judiciary-auth" class="fixed inset-0 bg-black/95 z-[60] hidden flex items-center justify-center p-4">
+            <div class="w-full max-w-md bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-[0_0_50px_rgba(212,175,55,0.2)] relative">
+                <button onclick="document.getElementById('modal-judiciary-auth').classList.add('hidden')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                <div class="text-center mb-8">
+                    <i class="fas fa-university text-4xl text-[#d4af37] mb-4"></i>
+                    <h2 class="text-2xl text-white brand-font">Authorized Portal</h2>
+                    <p class="text-xs text-gray-400 mt-2">Access for Competent Authorities</p>
+                </div>
+                <div class="space-y-4">
+                    <input type="password" id="judge-token" class="w-full input-field p-3 text-sm rounded border-[#d4af37]/20" placeholder="Enter One-Time Access Code">
+                    <input type="text" id="judge-target" class="w-full input-field p-3 text-sm rounded border-[#d4af37]/20" placeholder="e.g. 84920193">
+                    <button onclick="authenticateJudge()" class="w-full gold-btn font-bold py-3 rounded text-xs uppercase tracking-widest shadow-lg mt-2">
+                        <i class="fas fa-shield-alt mr-2"></i> Access Evidence Vault
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-judiciary-view" class="fixed inset-0 bg-[#02040a] z-[70] hidden overflow-y-auto">
+            <div class="container mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-8 border-b border-[#d4af37]/30 pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-[#d4af37]/10 rounded border border-[#d4af37]/30"><i class="fas fa-balance-scale text-2xl text-[#d4af37]"></i></div>
+                        <div><h2 class="text-2xl text-white brand-font">Authorized Review Interface</h2><p class="text-xs text-gray-400">Mode: <span class="text-[#d4af37] font-bold uppercase">Read-Only / Forensic View</span></p></div>
+                    </div>
+                    <button onclick="closeJudiciaryView()" class="px-6 py-2 border border-red-500/50 text-red-500 hover:bg-red-900/20 rounded text-xs uppercase font-bold transition">Close Session</button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-5 space-y-6">
+                        <div class="bg-[#0f172a] p-6 rounded-lg border border-[#d4af37]/20">
+                            <h4 class="text-xs text-[#d4af37] font-bold uppercase border-b border-[#d4af37]/30 pb-2 mb-4">Forensic Metadata</h4>
+                            <div class="space-y-4 font-mono text-[10px]">
+                                <div><span class="text-gray-500 block">Unique Document Code</span><span class="text-[#d4af37] text-lg font-bold" id="judge-doc-number">--</span></div>
+                                <div><span class="text-gray-500 block">Global Document Hash (SHA-256)</span><span class="text-[#d4af37] break-all" id="judge-doc-hash">--</span></div>
+                                <div><span class="text-gray-500 block">Creation Time (UTC)</span><span class="text-white" id="judge-time">--</span></div>
+                            </div>
+                        </div>
+                        <div class="bg-black/40 border border-white/10 rounded-lg p-4">
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mb-4"><i class="fas fa-users mr-1"></i> Signatories & Affidavits</h4>
+                            <div id="judge-sigs" class="space-y-2"></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-7">
+                        <div id="judge-controls" class="mb-4"></div>
+                        <div id="judge-doc-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-dashboard" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+            <div class="w-full max-w-6xl glass-panel p-8 rounded-xl relative border-t-4 border-[#d4af37] flex flex-col max-h-[85vh]">
+                <button onclick="closeDashboard()" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+                <div class="flex items-center gap-4 mb-6 flex-shrink-0">
+                    <div class="p-3 bg-[#d4af37]/10 rounded-full border border-[#d4af37]"><i class="fas fa-vault text-2xl text-[#d4af37]"></i></div>
+                    <div><h2 class="text-3xl text-white brand-font">Secure Repository</h2><p class="text-xs text-gray-400 uppercase tracking-widest">Digital Evidence Vault: <span id="dash-user" class="text-white">Active Session</span></p></div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-3 mb-4">
+                    <div class="flex-1"><input id="repo-filter" type="search" placeholder="Search by Code, Name, or Type..." class="w-full input-field p-3 text-xs rounded focus-outline"></div>
+                    <button onclick="renderRepo()" class="text-[11px] px-4 py-2 border border-white/10 rounded text-gray-200 hover:bg-white/5 whitespace-nowrap">Refresh</button>
+                </div>
+                <div class="overflow-y-auto flex-grow pr-2" style="min-height: 200px;">
+                    <table class="w-full text-left text-sm text-gray-400 ledger-table">
+                        <thead class="uppercase text-[10px] text-gray-500 border-b border-gray-800 bg-[#0d1326] sticky top-0 z-10">
+                            <tr><th class="py-3 pl-4 rounded-tl-lg">Status</th><th class="py-3">Code</th><th class="py-3">Instrument Type</th><th class="py-3">Parties</th><th class="py-3">Date</th><th class="py-3 text-right pr-4 rounded-tr-lg">Action</th></tr>
+                        </thead>
+                        <tbody id="repo-body" class="divide-y divide-gray-800"></tbody>
+                    </table>
+                </div>
+                <div class="mt-4 pt-4 border-t border-white/5 flex flex-col md:flex-row gap-4 justify-between items-center flex-shrink-0">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="chk-custody" class="legal-checkbox">
+                        <label for="chk-custody" class="text-[10px] text-gray-300 uppercase cursor-pointer hover:text-white font-bold">Request Secure Physical Custody</label>
+                        <button onclick="requestCustody()" class="text-[10px] bg-[#d4af37] text-black font-bold px-4 py-2 rounded hover:bg-white hover:text-black transition flex items-center gap-2"><i class="fas fa-archive"></i> SUBMIT REQUEST</button>
+                    </div>
+                    <button onclick="exportBackup()" class="text-xs px-4 py-3 border border-white/10 rounded text-gray-300 hover:bg-white/5 whitespace-nowrap">Export Backup (.LGL)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-repo-detail" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-4">
+            <div class="w-full max-w-6xl bg-[#0f172a] p-6 rounded-xl border border-white/10 relative max-h-[90vh] overflow-y-auto">
+                <button onclick="closeRepoDetail()" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+                <div id="repo-detail-body" class="flex flex-col h-full"></div>
+            </div>
+        </div>
+
+        <div id="modal-video" class="fixed inset-0 bg-black/90 z-[10000] hidden items-center justify-center p-4">
+            <div class="w-full max-w-2xl max-h-[90vh] bg-[#0f172a] p-4 rounded-xl border border-white/10 relative flex flex-col">
+                <button onclick="closeVideoModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white z-50"><i class="fas fa-times text-xl"></i></button>
+                <div class="flex-grow overflow-hidden flex items-center justify-center bg-black rounded-lg"><video id="evidence-player" controls class="w-full max-h-full object-contain"></video></div>
+                <div class="text-center mt-3 text-white font-mono text-xs">Video Evidence Playback</div>
+            </div>
+        </div>
+
+        <div id="sec-hub" class="w-full">
+            <div class="split-container fade-in">
+                
+                <div class="split-side side-express" onclick="startNewFlow()">
+                    <i class="fas fa-file-signature text-5xl mb-6 text-[#d4af37]"></i> <h2 class="text-3xl font-black brand-font mb-2">ESSPROOF EXPRESS</h2>
+                    <p class="text-xs font-bold uppercase tracking-widest text-[#f7ef8a]">Professional & Efficient</p>
+                    
+                    <ul class="feature-list">
+                        <li><i class="fas fa-bolt feature-icon"></i> Instant Drafting (3 Mins)</li>
+                        <li><i class="fas fa-pen-nib feature-icon"></i> Digital Signature</li>
+                        <li><i class="fas fa-user-shield feature-icon"></i> No Camera Required</li>
+                        <li><i class="fas fa-file-pdf feature-icon"></i> Standard PDF Output</li>
+                    </ul>
+
+                    <button class="btn-action">Start Express</button>
+                </div>
+
+                <div class="split-side side-premium" onclick="startNewFlow()">
+                    <i class="fas fa-shield-alt text-5xl mb-6 text-[#d4af37]"></i>
+                    <h2 class="text-3xl font-black brand-font mb-2">ESSPROOF PREMIUM</h2>
+                    <p class="text-xs font-bold uppercase tracking-widest text-[#f7ef8a]">The Ultimate Standard</p>
+                    
+                    <ul class="feature-list">
+                        <li><i class="fas fa-video feature-icon"></i> Biometric Video Proof</li>
+                        <li><i class="fas fa-fingerprint feature-icon"></i> Forensic Metadata</li>
+                        <li><i class="fas fa-link feature-icon"></i> Blockchain Timestamp</li>
+                        <li><i class="fas fa-gavel feature-icon"></i> Judiciary Ready</li>
+                    </ul>
+
+                    <button class="btn-action">Start Premium</button>
+                </div>
+
+                <div class="room-join-bar">
+                    <i class="fas fa-key text-[#d4af37]"></i>
+                    <input type="text" id="manual-token" placeholder="Enter 15-Digit Room Key..." autocomplete="off" class="bg-transparent border-none text-white text-sm font-mono w-full focus:outline-none placeholder-gray-500">
+                    <button onclick="processToken()" class="text-[#d4af37] hover:text-white transition"><i class="fas fa-arrow-right"></i></button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="w-full flex justify-center"> 
+            <section id="sec-auth" class="w-full max-w-xl glass-panel p-10 rounded-xl hidden relative overflow-hidden fade-in mt-10 mb-10">
+                <button onclick="location.reload()" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                <div class="text-center mb-6">
+                    <div class="relative w-24 h-24 mx-auto mb-4 border border-[#d4af37]/30 rounded-full flex items-center justify-center bg-black/50">
+                        <i class="fas fa-user-astronaut text-5xl text-[#d4af37]"></i>
+                        <div id="bio-scan-line" class="scan-line hidden"></div>
+                    </div>
+                    <h2 class="text-2xl text-white brand-font">Identity Gateway</h2>
+                </div>
+                <div id="auth-warning" class="hidden mb-6 bg-[#d4af37]/20 border border-[#d4af37]/30 p-3 rounded text-[10px] text-[#d4af37]"><i class="fas fa-lock mr-1"></i> Joining Document: <span id="target-doc-name" class="font-bold text-white">--</span></div>
+                <div class="space-y-4">
+                    <input type="text" id="auth-name" class="w-full input-field p-3 text-sm rounded" placeholder="Your Legal Name">
+                    <input type="text" id="auth-nid" class="w-full input-field p-3 text-sm rounded" placeholder="Your National ID (Key)">
+                    
+                    <div class="bg-black/60 border border-white/20 rounded p-4 mb-4" id="mode-selector-container">
+                        <label class="block text-[10px] text-[#d4af37] uppercase font-bold tracking-widest mb-3 text-center">Select Security Protocol</label>
+                        <div class="flex bg-[#0b1021] rounded p-1 border border-white/10">
+                            <button id="mode-btn-video" onclick="setAuthMode('video')" class="flex-1 py-2 text-xs font-bold rounded uppercase transition bg-[#d4af37] text-black">
+                                <i class="fas fa-video mr-1"></i> Shield (Video)
+                            </button>
+                            <button id="mode-btn-text" onclick="setAuthMode('text')" class="flex-1 py-2 text-xs font-bold rounded uppercase transition text-gray-500 hover:text-white">
+                                <i class="fas fa-file-alt mr-1"></i> Standard (Text)
+                            </button>
+                        </div>
+                        <p id="mode-desc" class="text-[9px] text-gray-400 mt-2 text-center italic">Highest security. Requires Camera & Microphone.</p>
+                    </div>
+
+                    <div class="bg-black/40 border border-white/10 rounded p-4 text-[13px] text-gray-400 space-y-3 mt-4 mb-4">
+                        <h4 class="text-[#d4af37] font-bold uppercase tracking-widest border-b border-white/5 pb-2 mb-2">Mandatory Legal Consent</h4>
+                        <div class="flex gap-3 items-start"><input type="checkbox" id="chk-1" class="legal-checkbox" onchange="validateConsent()"><label for="chk-1" id="lbl-chk-1" class="text-[12px] md:text-[13px] cursor-pointer hover:text-white transition"><strong class="text-white">1. Forensic Data Consent:</strong> I explicitly authorize the recording of my Biometrics (Video/Audio), Geolocation (GPS), and Device Fingerprint (IP) to generate an evidentiary package.</label></div>
+                        <div class="flex gap-3 items-start"><input type="checkbox" id="chk-2" class="legal-checkbox" onchange="validateConsent()"><label for="chk-2" class="text-[12px] md:text-[13px] cursor-pointer hover:text-white transition"><strong class="text-white">2. Private Entity Notice:</strong>I acknowledge that Essproof is a private forensic technology provider and does not replace any government-mandated notarial authority.</label></div>
+                        <div class="flex gap-3 items-start"><input type="checkbox" id="chk-3" class="legal-checkbox" onchange="validateConsent()"><label for="chk-3" class="text-[12px] md:text-[13px] cursor-pointer hover:text-white transition"><strong class="text-white">3. Admissibility & Waiver:</strong> I understand that any evidentiary materials generated may be submitted in legal proceedings to demonstrate my intent, subject to the discretion of the competent authority.</label></div>
+                    </div>
+                    <button id="btn-auth" onclick="submitAuth()" class="w-full gold-btn py-3 rounded opacity-50 cursor-not-allowed grayscale" disabled>Verify Biometrics</button>
+                </div>
+                <p id="bio-status" class="text-center text-[10px] font-mono text-[#d4af37] mt-4 hidden">INITIALIZING SCAN...</p>
+            </section>
+        </div>
+
+        <section id="sec-create" class="w-full max-w-6xl glass-panel p-8 rounded-xl hidden fade-in mx-auto mt-10">
+            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h2 class="text-2xl text-white brand-font">Smart Drafting Studio</h2>
+                <span class="text-white font-bold text-sm" id="creator-name-display">--</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 space-y-6 max-h-[500px] overflow-y-auto pr-2">
+                    <div>
+                        <label class="block text-[10px] text-[#d4af37] mb-2 uppercase font-bold tracking-widest">Setup</label>
+                        <select id="contract-mode" class="w-full input-field p-3 text-sm rounded bg-[#0b1021]" onchange="toggleMode()">
+                            <option value="multi">Multi-Party Contract</option>
+                            <option value="single">Single Party (Solo)</option>
+                        </select>
+                    </div>
+                    <div id="template-section">
+                        <label class="block text-[10px] text-[#d4af37] mb-2 uppercase font-bold tracking-widest">Select Template</label>
+                        <select id="template-select" class="w-full input-field p-3 text-sm rounded bg-[#0b1021]" onchange="loadTemplateInputs()">
+                            <option value="">-- Choose Instrument --</option>
+                            <option value="promissory">1. Promissory Note (IOU)</option>
+                            <option value="vehicle">2. Vehicle Sale Agreement</option>
+                            <option value="rent">3. Residential Lease</option>
+                            <option value="nda">4. Non-Disclosure Agreement</option>
+                            <option value="freelance">5. Freelance Service Contract</option>
+                            <option value="poa">6. Limited Power of Attorney</option>
+                            <option value="will">7. Last Will & Testament</option>
+                            <option value="partnership">8. Partnership Agreement</option>
+                            <option value="custom">Custom (Blank)</option>
+                        </select>
+                    </div>
+                    <div id="smart-inputs" class="space-y-3 hidden bg-white/5 p-4 rounded border border-white/10"></div>
+                    <div id="roster-section" class="bg-white/5 p-4 rounded border border-white/10">
+                        <div class="flex justify-between items-center mb-4">
+                            <label class="text-[10px] text-[#d4af37] font-bold uppercase tracking-widest">Signatories</label>
+                            <button onclick="addRow()" class="text-[10px] bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/50 px-2 py-1 rounded hover:bg-[#d4af37] hover:text-black transition"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                        <div id="roster-list" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-8 flex flex-col">
+                    <div class="flex justify-between mb-2">
+                        <label class="block text-[10px] text-gray-500 uppercase">Live Document Preview</label>
+                        <span class="text-[9px] text-[#d4af37] uppercase">Auto-Generated</span>
+                    </div>
+                    <textarea id="create-text" class="w-full flex-grow input-field p-8 text-gray-300 legal-font text-sm leading-7 resize-none rounded min-h-[400px]" placeholder="Select a template to generate text..."></textarea>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-end border-t border-white/10 pt-4 relative">
+                <button id="btn-force-sign" onclick="smartGoToSigning()" class="gold-btn px-10 py-4 shadow-lg text-sm tracking-widest hover:bg-[#b45309]">INITIATE & SIGN <i class="fas fa-arrow-right ml-2"></i></button>
+            </div>
+        </section>
+
+        <section id="sec-sign" class="w-full max-w-4xl glass-panel p-0 hidden rounded-xl overflow-hidden border border-white/10 fade-in mx-auto mt-10">
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="bg-black p-8 flex flex-col justify-center items-center relative">
+                    
+                    <div id="video-container" class="w-full mb-4">
+                        <div class="w-full aspect-square bg-[#111] border border-gray-800 rounded mb-4 relative overflow-hidden">
+                            <video id="webcam" autoplay muted class="absolute inset-0 w-full h-full object-cover hidden"></video>
+                            <div id="cam-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-700"><i class="fas fa-camera text-3xl mb-2"></i></div>
+                        </div>
+                        <button id="btn-record" onclick="toggleRecord()" class="w-full border border-gray-700 text-gray-400 hover:text-white py-3 text-xs uppercase font-bold rounded">Record Affidavit</button>
+                    </div>
+                    
+                    <div class="mb-4 w-full">
+                        <label class="text-[10px] text-[#d4af37] uppercase font-bold tracking-widest block mb-2 text-center">Draw Signature</label>
+                        <div class="border border-white/20 bg-white rounded relative h-32 md:h-40">
+                            <canvas id="sig-canvas" class="w-full h-full cursor-crosshair touch-none bg-white rounded"></canvas>
+                            <button onclick="clearSignature()" class="absolute top-2 right-2 text-[10px] text-red-600 font-bold hover:text-red-800 px-2 rounded"><i class="fas fa-trash"></i> Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 bg-[#0b1021] flex flex-col justify-center">
+                    <h3 class="text-xl text-white brand-font mb-4">Proof of Volition</h3>
+                    <p class="text-gray-400 text-sm italic mb-8">"I, <span id="sign-name-display" class="text-white font-bold">--</span>, holding ID <span id="sign-id-display" class="text-[#d4af37]">--</span>, hereby confirm that I am signing this voluntarily."</p>
+                    <button id="btn-seal" onclick="finalizeSigSimple()" class="gold-btn py-4 rounded w-full opacity-50 cursor-not-allowed" disabled>Cryptographic Seal</button>
+                    <div id="process-status" class="hidden mt-4 text-center">
+                        <p class="text-[10px] text-[#d4af37] font-mono">CAPTURING METADATA...</p>
+                        <p class="text-[10px] text-[#d4af37] font-mono mt-1" id="meta-disp"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-signing-room" class="w-full max-w-6xl glass-panel p-8 rounded-xl hidden border-t-4 border-[#d4af37] fade-in mx-auto mt-10">
+            <div class="bg-blue-900/30 border border-blue-500/50 p-4 rounded-lg mb-6 text-center shadow-lg">
+                <i class="fas fa-info-circle text-blue-400 text-xl mb-2"></i>
+                <p class="text-xs text-blue-100 leading-relaxed font-bold">
+                    ATTENTION INITIATOR: Please copy the <span class="text-[#d4af37]">15-Digit Room Key</span> from the bottom-left box and share it with all other parties. 
+                    They must enter this key on the main screen to join this session and sign the instrument.
+                </p>
+            </div>
+
+            <div class="flex justify-between items-start mb-8 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="text-3xl text-white brand-font">Signing Room</h2>
+                    <p class="text-xs text-gray-400 mt-1">Instrument ID: <span id="room-code" class="text-[#d4af37] font-mono font-bold">--</span></p>
+                </div>
+                <div class="text-right">
+                    <span class="block text-[9px] text-gray-500 uppercase tracking-widest mb-1">Status</span>
+                    <div id="room-status-text" class="text-xl text-white font-mono font-bold">--</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 flex flex-col h-full">
+                    <div class="bg-[#0b1021] rounded-lg p-5 border border-white/10 h-full flex flex-col">
+                        <h4 class="text-[10px] text-[#d4af37] uppercase tracking-widest mb-4 border-b border-white/10 pb-2">Participants</h4>
+                        <div id="room-roster" class="flex-grow overflow-y-auto space-y-2">
+                            </div>
+                        
+                        <div class="mt-6 pt-4 border-t border-white/10">
+                            <p class="text-[9px] text-gray-500 mb-2 uppercase tracking-widest font-bold">Room Access Key (15-Digit)</p>
+                            <div class="bg-black p-3 rounded border border-[#d4af37] text-[#d4af37] font-mono text-lg font-bold text-center tracking-widest cursor-pointer hover:bg-white/5 transition" onclick="copyToken()" id="room-token-box">--</div>
+                             <div class="mt-2 flex gap-2">
+                                <button id="btn-copy-token" onclick="copyToken()" class="flex-1 border border-white/20 text-white py-2 rounded text-[10px] hover:bg-white/10">Copy Key</button>
+                                <button id="btn-print-room" onclick="printDocument(contract.id)" class="flex-1 bg-white text-black py-2 rounded text-[10px] font-bold hover:bg-gray-200 hidden">Print / PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8 flex flex-col">
+                      <div id="room-action-area" class="mb-6 hidden">
+                          <div class="bg-gradient-to-r from-[#d4af37]/20 to-transparent p-4 rounded border border-[#d4af37] flex justify-between items-center">
+                              <div>
+                                  <h4 class="text-white font-bold text-sm">Action Required</h4>
+                                  <p class="text-[10px] text-gray-300">User: <span id="room-user-name" class="font-bold">--</span></p>
+                              </div>
+                              <button onclick="goToSigningSafe()" class="gold-btn px-6 py-3 rounded text-xs shadow-lg animate-pulse">PROCEED TO SIGN</button>
+                          </div>
+                      </div>
+                      
+                      <div id="room-sealed-area" class="mb-6 hidden">
+                        <div class="bg-green-900/20 p-4 rounded border border-green-500/50 flex items-center justify-center gap-4">
+                            <i class="fas fa-certificate text-3xl text-green-500"></i>
+                            <div class="text-center">
+                                <h4 class="text-green-400 font-bold text-sm uppercase tracking-widest">Officially Sealed & Executed</h4>
+                                <p class="text-[10px] text-gray-400 font-mono" id="room-final-hash">--</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#fdfbf7] text-black p-8 shadow-inner relative min-h-[500px] overflow-y-auto rounded h-full">
+                        <div class="absolute top-2 right-2 border border-red-800 text-red-800 px-2 text-[9px] font-bold uppercase rotate-12 opacity-50">Live Preview</div>
+                        <h3 class="font-bold text-lg mb-4 uppercase border-b border-black/20 pb-2" id="room-doc-type">--</h3>
+                        <p class="font-serif text-sm leading-relaxed whitespace-pre-line text-justify break-words" id="room-text">--</p>
+                        
+                        <div class="mt-12 pt-6 border-t-2 border-black/10">
+                            <div class="text-[10px] font-bold uppercase mb-4 text-gray-500">Execution Block:</div>
+                            <div id="room-sigs-preview" class="flex flex-wrap gap-8"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-white/10 bg-[#02040a] py-6 mt-auto">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-[11px] text-gray-500 uppercase tracking-widest leading-relaxed">
+                DISCLAIMER: This platform is exclusively for the registration of non-official, non-governmental, private (personal or multi-party) self-willed instruments.
+            </p>
+            <p class="text-[10px] text-gray-700 mt-2">© 2025 Essproof Systems. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlfX416VJz5rx4rcbQE15FOUAEAf0eFCw",
+            authDomain: "essproof-866ef.firebaseapp.com",
+            databaseURL: "https://essproof-866ef-default-rtdb.firebaseio.com/",
+            projectId: "essproof-866ef",
+            storageBucket: "essproof-866ef.firebasestorage.app",
+            messagingSenderId: "831180163230",
+            appId: "1:831180163230:web:ddd865e353cee6d3a5938f"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // --- GLOBAL LOGIC ---
+        let selectedAuthMode = 'video';
+        let user = { name: "", nid: "" };
+        let contract = null;
+        let activeJudgeDoc = null;
+        let activeDetailDoc = null;
+        let selectedDocId = null;
+        let isRec = false;
+        let mediaRecorder=null, recChunks=[];
+        let videoBlobCaptured = null;
+        let pendingContractData = null;
+        let canvas, ctx, isDrawing = false;
+
+        // --- TEMPLATES ---
+        const TEMPLATES = {
+            'promissory': { fields: ['Lender Name', 'Borrower Name', 'Amount', 'Currency', 'Repayment Date'], text: (d) => `PROMISSORY NOTE (IOU)\n\nLENDER: ${d['Lender Name']}\nBORROWER: ${d['Borrower Name']}\n\nFor value received, the Borrower promises to pay to the Lender the sum of ${d['Amount']} ${d['Currency']}.\n\nRepayment Date: ${d['Repayment Date']}\n\nI, the Borrower, acknowledge receiving the above amount and commit to repaying it in full.` },
+            'vehicle': { fields: ['Seller Name', 'Buyer Name', 'Vehicle Model', 'VIN/Chassis', 'Price'], text: (d) => `VEHICLE SALE AGREEMENT\n\nSELLER: ${d['Seller Name']}\nBUYER: ${d['Buyer Name']}\n\nVehicle: ${d['Vehicle Model']}\nVIN: ${d['VIN/Chassis']}\n\nSale Price: ${d['Price']}\n\nThe Seller declares full ownership of the vehicle and confirms it is free of legal claims.` },
+            'rent': { fields: ['Landlord', 'Tenant', 'Property Address', 'Monthly Rent', 'Start Date'], text: (d) => `RESIDENTIAL LEASE AGREEMENT\n\nLANDLORD: ${d['Landlord']}\nTENANT: ${d['Tenant']}\n\nProperty: ${d['Property Address']}\nRent: ${d['Monthly Rent']} per month\n\nLease Start Date: ${d['Start Date']}\n\nThe Tenant agrees to pay rent on time and maintain the property in good condition.` },
+            'nda': { fields: ['Disclosing Party', 'Receiving Party', 'Purpose'], text: (d) => `NON-DISCLOSURE AGREEMENT (NDA)\n\nBETWEEN: ${d['Disclosing Party']} AND ${d['Receiving Party']}\n\nPurpose: ${d['Purpose']}\n\nBoth parties agree to keep all exchanged information strictly confidential and use it solely for the purpose stated above.` },
+            'freelance': { fields: ['Client', 'Freelancer', 'Scope of Work', 'Fee'], text: (d) => `FREELANCE SERVICE AGREEMENT\n\nCLIENT: ${d['Client']}\nFREELANCER: ${d['Freelancer']}\n\nScope: ${d['Scope of Work']}\nFee: ${d['Fee']}\n\nThe Freelancer agrees to deliver the work as specified. Ownership of the final work transfers to Client upon payment.` },
+            'poa': { fields: ['Principal', 'Agent', 'Scope of Authority'], text: (d) => `LIMITED POWER OF ATTORNEY\n\nI, ${d['Principal']}, hereby appoint ${d['Agent']} as my attorney-in-fact.\n\nScope: ${d['Scope of Authority']}\n\nThis power is limited to the specific acts listed above and shall remain valid until revoked in writing.` },
+            'will': { fields: ['Testator Name', 'Beneficiary 1', 'Beneficiary 2', 'Assets'], text: (d) => `LAST WILL AND TESTAMENT\n\nI, ${d['Testator Name']}, being of sound mind, declare this to be my Last Will.\n\nBeneficiaries:\n1. ${d['Beneficiary 1']}\n2. ${d['Beneficiary 2']}\n\nAssets Covered: ${d['Assets']}\n\nI hereby revoke all prior wills and codicils.` },
+            'partnership': { fields: ['Partner 1', 'Partner 2', 'Business Purpose'], text: (d) => `PARTNERSHIP AGREEMENT\n\nPARTNERS: ${d['Partner 1']} and ${d['Partner 2']}\n\nPurpose: ${d['Business Purpose']}\n\nPartners agree to share profits and losses equally.` },
+            'custom': { fields: [], text: (d) => `` }
+        };
+
+        const PricingEngine = {
+            calculateNonFinancial: (partyCount) => { const base = 20; const extraPeople = Math.max(0, partyCount - 2); return base + (extraPeople * 2); },
+            calculateFinancial: (amount, partyCount) => {
+                let basePrice = 0; let extraPerPerson = 0;
+                if (amount <= 1000) { basePrice = 15; extraPerPerson = 5; } 
+                else if (amount <= 10000) { basePrice = 39; extraPerPerson = 7; } 
+                else if (amount <= 50000) { basePrice = 79; extraPerPerson = 10; } 
+                else if (amount <= 100000) { basePrice = 119; extraPerPerson = 15; } 
+                else { basePrice = amount * 0.002; extraPerPerson = 50; }
+                const extraPeople = Math.max(0, partyCount - 2);
+                return Math.floor(basePrice + (extraPeople * extraPerPerson)); 
+            }
+        };
+
+        // --- FIREBASE HELPER FUNCTIONS ---
+        function blobToBase64(blob) {
+            return new Promise((resolve, _) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        }
+        function base64ToBlob(base64, mimeType = 'video/webm') {
+            const byteString = atob(base64.split(',')[1]);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeType });
+        }
+
+        async function save(item) { 
+            try { 
+                const cleanItem = JSON.parse(JSON.stringify(item));
+                await db.ref('contracts/' + item.id).set(cleanItem);
+                showToast("Synced to Cloud");
+            } catch(e) { 
+                console.error(e); showToast("Sync Error: " + e.message, "error"); 
+            } 
+        }
+
+        async function loadAll() { 
+            try { 
+                const snapshot = await db.ref('contracts').get();
+                if (snapshot.exists()) {
+                    return Object.values(snapshot.val());
+                } else {
+                    return [];
+                }
+            } catch(e) { 
+                console.error(e); return []; 
+            } 
+        }
+
+        async function saveVideoToDB(key, blob) { 
+            try {
+                const base64 = await blobToBase64(blob);
+                await db.ref('videos/' + key).set({ data: base64 });
+            } catch(e) { console.error("Video Save Error:", e); }
+        }
+
+        async function loadVideoFromDB(key) { 
+            try {
+                const snapshot = await db.ref('videos/' + key).get();
+                if (snapshot.exists()) {
+                    const base64 = snapshot.val().data;
+                    return base64ToBlob(base64);
+                }
+                return null;
+            } catch(e) { return null; }
+        }
+
+        // --- EXPORT FUNCTIONS TO WINDOW ---
+        window.setAuthMode = function(mode) {
+            const token = document.getElementById('manual-token').value.trim();
+            if(token && contract) return;
+            selectedAuthMode = mode;
+            const btnVideo = document.getElementById('mode-btn-video');
+            const btnText = document.getElementById('mode-btn-text');
+            const lblChk1 = document.getElementById('lbl-chk-1');
+            const desc = document.getElementById('mode-desc');
+
+            if (mode === 'video') {
+                btnVideo.classList.add('bg-[#d4af37]', 'text-black'); btnVideo.classList.remove('text-gray-500', 'hover:text-white');
+                btnText.classList.remove('bg-[#d4af37]', 'text-black'); btnText.classList.add('text-gray-500', 'hover:text-white');
+                lblChk1.innerHTML = '<strong class="text-white">1. Forensic Data Consent:</strong> I authorize recording of my Biometrics (Video/Audio) and Device Fingerprint.';
+                desc.innerText = "Highest security. Requires Camera & Microphone.";
+            } else {
+                btnText.classList.add('bg-[#d4af37]', 'text-black'); btnText.classList.remove('text-gray-500', 'hover:text-white');
+                btnVideo.classList.remove('bg-[#d4af37]', 'text-black'); btnVideo.classList.add('text-gray-500', 'hover:text-white');
+                lblChk1.innerHTML = '<strong class="text-white">1. Digital Log Consent:</strong> I authorize secure logging of my Digital Signature, IP, and Timestamp (No Video).';
+                desc.innerText = "Standard security. No Camera required.";
+            }
+        };
+
+        window.loadTemplateInputs = function() {
+            const key = document.getElementById('template-select').value;
+            const container = document.getElementById('smart-inputs');
+            const textArea = document.getElementById('create-text');
+            container.innerHTML = '<h4 class="text-xs text-white font-bold border-b border-gray-700 pb-2 mb-3">Fill Details</h4>';
+            if (!key || key === 'custom') { container.classList.add('hidden'); textArea.value = ''; textArea.readOnly = false; return; }
+            container.classList.remove('hidden'); textArea.readOnly = true; 
+            TEMPLATES[key].fields.forEach(field => {
+                const div = document.createElement('div'); div.className = 'template-form-group';
+                div.innerHTML = `<label class="template-label">${field}</label><input type="text" class="w-full input-field p-2 text-xs rounded" oninput="updateTemplateText('${key}')" data-field="${field}">`;
+                container.appendChild(div);
+            });
+            updateTemplateText(key);
+        };
+
+        window.updateTemplateText = function(key) {
+            const inputs = document.querySelectorAll('#smart-inputs input');
+            let data = {};
+            inputs.forEach(input => { data[input.dataset.field] = input.value || `[${input.dataset.field}]`; });
+            document.getElementById('create-text').value = TEMPLATES[key].text(data);
+        };
+
+        function showToast(message, type='success', duration=4000){
+            const toast = document.getElementById('toast-msg'); const text = document.getElementById('toast-text'); if(!toast) return;
+            toast.style.display='flex'; toast.style.borderColor = type==='error'? '#f87171' : '#d4af37'; toast.style.background = type==='error'? 'rgba(127,29,29,0.9)' : 'rgba(13,18,35,0.95)'; toast.style.color = '#d4af37'; text.innerText = message; setTimeout(()=>{ toast.style.display='none'; }, duration);
+        }
+        
+        window.copyToClipboard = function(text, msg='Copied'){ if(!text) return; navigator.clipboard?.writeText(text).then(()=>showToast(msg,'success',2000)).catch(()=>alert(msg)); }
+        
+        function generateDocNumber(existingNums=[]){ const used = new Set(existingNums); let num=''; do{ num = Math.floor(10000000 + Math.random() * 90000000).toString(); } while(used.has(num)); return num; }
+        
+        window.exportBackup = async function(){ const data = await loadAll(); const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'noteseal-backup.lgl'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Backup exported'); }
+        
+        async function computeHash(text){ try{ const enc = new TextEncoder().encode(text); const buf = await crypto.subtle.digest('SHA-256', enc); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase(); }catch(e){ return "0x" + Math.random().toString(16).substr(2, 64).toUpperCase(); } }
+        
+        function getMockIP() { return `192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`; }
+        function getMockGPS() { return `${(35 + Math.random()*5).toFixed(4)}° N, ${(30 + Math.random()*5).toFixed(4)}° E`; }
+
+        window.initSignaturePad = function() {
+            canvas = document.getElementById('sig-canvas'); if(!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width; canvas.height = rect.height;
+            const newCanvas = canvas.cloneNode(true);
+            canvas.parentNode.replaceChild(newCanvas, canvas);
+            canvas = newCanvas;
+            ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.lineCap = 'round';
+            canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw); canvas.addEventListener('mouseout', stopDraw);
+            canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); startDraw(e.touches[0]); }, {passive:false});
+            canvas.addEventListener('touchmove', (e)=>{ e.preventDefault(); draw(e.touches[0]); }, {passive:false});
+            canvas.addEventListener('touchend', (e)=>{ e.preventDefault(); stopDraw(); }, {passive:false});
+        };
+        function startDraw(e) { isDrawing = true; ctx.beginPath(); const rect = canvas.getBoundingClientRect(); ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top); }
+        function draw(e) { if (!isDrawing) return; const rect = canvas.getBoundingClientRect(); ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top); ctx.stroke(); }
+        function stopDraw() { isDrawing = false; }
+        window.clearSignature = function() { if(ctx) { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height); } };
+
+        window.onload = async function() { 
+            document.getElementById('manual-token').value = ''; 
+            ['auth-name','auth-nid'].forEach(id=>{ const el = document.getElementById(id); if(el) el.addEventListener('input', validateConsent); });
+            const filter = document.getElementById('repo-filter'); if(filter) filter.addEventListener('input', ()=>renderRepo());
+        };
+
+        window.validateConsent = function() {
+            const c1 = document.getElementById('chk-1').checked; const c2 = document.getElementById('chk-2').checked; const c3 = document.getElementById('chk-3').checked;
+            const nameVal = document.getElementById('auth-name').value.trim(); const nidVal = document.getElementById('auth-nid').value.trim();
+            const btn = document.getElementById('btn-auth');
+            if (c1 && c2 && c3 && nameVal && nidVal) { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale'); } else { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale'); }
+        };
+
+        window.requestCustody = function() { 
+            const chk = document.getElementById('chk-custody'); 
+            if(!chk.checked) return alert("Please check the custody request box."); 
+            if(!selectedDocId) return alert("Please SELECT a document row first.");
+            showToast('REQUEST REGISTERED. PHYSICAL ARCHIVE INITIATED.'); 
+            setTimeout(()=>{ chk.checked=false; }, 1500); 
+        };
+
+        window.openJudiciaryLogin = function() { document.getElementById('modal-judiciary-auth').classList.remove('hidden'); };
+        window.authenticateJudge = async function() {
+            const token = document.getElementById('judge-token').value.trim(); const target = document.getElementById('judge-target').value.trim();
+            if(!["JUDGE-KEY-2025","1234567"].includes(token)) return alert("ACCESS DENIED.");
+            const allDocs = await loadAll(); const doc = allDocs.find(d => d.docNumber===target || d.id===target);
+            if(!doc) return alert("No record found.");
+            
+            // Explicit check to ensure we show Signed status correctly in Authority Panel
+            activeJudgeDoc = doc; 
+            document.getElementById('modal-judiciary-auth').classList.add('hidden'); document.getElementById('modal-judiciary-view').classList.remove('hidden');
+            document.getElementById('judge-doc-number').innerText = doc.docNumber; document.getElementById('judge-doc-hash').innerText = doc.hash || "PENDING"; document.getElementById('judge-time').innerText = doc.created;
+            
+            const sigContainer = document.getElementById('judge-sigs'); sigContainer.innerHTML = '';
+            doc.parties.forEach(p => {
+                const vidKey = `${doc.id}-${p.nid}`;
+                const vidBtn = (p.signed && doc.requiresVideo !== false) ? `<button onclick="openVideoModal('${vidKey}')" class="text-[9px] bg-blue-600 hover:bg-blue-500 text-white border border-blue-400 px-3 py-1 rounded transition flex items-center gap-1 shadow-md"><i class="fas fa-play-circle"></i> Evidence</button>` : `<span class="text-[9px] text-gray-500 italic border border-gray-700 px-2 py-1 rounded">No Video</span>`;
+                const meta = p.evidence || {ip:'N/A', gps:'N/A'};
+                sigContainer.innerHTML += `<div class="border border-white/10 rounded p-3 mb-2 text-xs bg-black/40"><div class="flex justify-between items-center mb-2"><span class="text-white font-bold flex items-center gap-2"><i class="fas fa-user-check text-[#d4af37]"></i> ${p.name}</span><span class="${p.signed?'text-green-400':'text-yellow-500'} font-mono text-[9px] border ${p.signed?'border-green-500/30':'border-yellow-500/30'} px-1 rounded">${p.signed?'VERIFIED':'WAITING'}</span></div><div class="flex justify-between items-end"><div class="grid grid-cols-1 gap-1 text-gray-400 font-mono text-[9px]"><div>ID: <span class="text-gray-300">${p.nid}</span></div><div>IP: <span class="text-blue-300">${meta.ip}</span></div><div>GPS: <span class="text-blue-300">${meta.gps}</span></div></div><div>${vidBtn}</div></div></div>`;
+            });
+            renderJudgeMode(doc.status === 'EXECUTED');
+        };
+
+        function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+        function generatePaperHTML(doc) {
+            const sigsHTML = doc.parties.map(p => `
+                <div class="paper-sig-block">
+                    ${p.signatureImg ? `<img src="${p.signatureImg}" style="height:40px;display:block;margin-bottom:5px;">` : '<strong>[PENDING]</strong><br>'}
+                    <strong>${p.name}</strong><br>ID: ${p.nid}<br>
+                    ${p.signed ? `<span class="meta-data">Date: ${p.date}<br>IP: ${p.evidence?.ip}<br>GPS: ${p.evidence?.gps}</span>` : ''}
+                </div>`).join('');
+            const safeText = escapeHtml(doc.text);
+            return `<div class="paper-view"><div class="paper-watermark">EssProof</div><div class="paper-header"><h1>EssProof</h1><p style="font-size:10px;text-transform:uppercase;color:#555;">PRIVATE NON-GOVERNMENTAL PLATFORM<br>Secure Digital Instrument Registry</p></div><div class="paper-title">${doc.type}</div><div style="font-size: 10px; margin-bottom: 20px; font-family:monospace;">Ref: ${doc.docNumber} | Mode: ${doc.requiresVideo !== false ? 'Video Shield' : 'Standard Text'}</div><div class="paper-body">${safeText}</div><div class="paper-sigs">${sigsHTML}</div><div class="paper-hash-box"><strong>FINAL CRYPTOGRAPHIC SEAL (SHA-256):</strong><br>${doc.hash || 'NOT FINALIZED'}</div></div>`;
+        }
+
+        window.renderJudgeMode = function(isEncryptedMode) {
+            const container = document.getElementById('judge-doc-container');
+            const controls = document.getElementById('judge-controls');
+            container.innerHTML = ''; controls.innerHTML = '';
+            if (isEncryptedMode && activeJudgeDoc.status === 'EXECUTED') {
+                 const encryptedText = btoa(unescape(encodeURIComponent(activeJudgeDoc.text)));
+                 controls.innerHTML = `<button onclick="renderJudgeMode(false)" class="w-full bg-red-600 text-white py-4 rounded font-bold shadow-lg hover:bg-red-700 transition uppercase tracking-widest text-xs mb-4"><i class="fas fa-unlock mr-2"></i> DECRYPT & VERIFY CONTENT</button>`;
+                 container.innerHTML = `<div class="encrypted-view">${encryptedText}</div>`;
+            } else {
+                 if(activeJudgeDoc.status === 'EXECUTED') {
+                    controls.innerHTML = `<button onclick="renderJudgeMode(true)" class="w-full bg-green-600 text-white py-4 rounded font-bold shadow-lg hover:bg-green-700 transition uppercase tracking-widest text-xs mb-4"><i class="fas fa-lock mr-2"></i> RE-ENCRYPT VIEW</button>`;
+                 }
+                 container.innerHTML = generatePaperHTML(activeJudgeDoc);
+            }
+        };
+        window.closeJudiciaryView = function() { document.getElementById('modal-judiciary-view').classList.add('hidden'); document.getElementById('judge-token').value = ''; document.getElementById('judge-target').value = ''; activeJudgeDoc = null; };
+
+        window.startNewFlow = function() { 
+            document.getElementById('manual-token').value = ''; 
+            resetAuthForm(); 
+            const ctr = document.getElementById('mode-selector-container');
+            ctr.style.pointerEvents = 'auto'; ctr.style.opacity = '1';
+            document.getElementById('mode-desc').innerText = "Highest security. Requires Camera & Microphone.";
+            document.getElementById('sec-hub').classList.add('hidden'); 
+            document.getElementById('sec-auth').classList.remove('hidden'); 
+            document.getElementById('auth-warning').classList.add('hidden'); 
+        };
+        
+        function resetAuthForm() { 
+            document.getElementById('auth-name').value = ''; document.getElementById('auth-nid').value = ''; 
+            document.getElementById('chk-1').checked = false; document.getElementById('chk-2').checked = false; document.getElementById('chk-3').checked = false; 
+            setAuthMode('video');
+            const btn = document.getElementById('btn-auth'); btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale'); 
+        }
+
+        window.processToken = async function() { 
+            let t = document.getElementById('manual-token').value.trim(); if(!t) return alert("Enter Key"); 
+            try { 
+                const all = await loadAll();
+                const found = all.find(c => c.roomKey === t);
+                if (found) {
+                    contract = found;
+                } else {
+                    throw new Error("Room Key not found in local record.");
+                }
+                
+                const tempContract = contract;
+                contract = null;
+                const requiredMode = (tempContract.requiresVideo !== false) ? 'video' : 'text';
+                setAuthMode(requiredMode);
+                contract = tempContract;
+
+                const modeContainer = document.getElementById('mode-selector-container');
+                modeContainer.style.pointerEvents = 'none'; 
+                modeContainer.style.opacity = '0.7'; 
+                const typeLabel = requiredMode === 'video' ? 'VIDEO SHIELD' : 'STANDARD TEXT';
+                document.getElementById('mode-desc').innerHTML = `<span class="text-[#d4af37]"><i class="fas fa-lock"></i> MANDATORY:</span> Contract requires <strong>${typeLabel}</strong>.`;
+                
+                document.getElementById('auth-name').value = ''; document.getElementById('auth-nid').value = '';
+                document.getElementById('chk-1').checked = false; document.getElementById('chk-2').checked = false; document.getElementById('chk-3').checked = false; 
+                
+                document.getElementById('sec-hub').classList.add('hidden'); 
+                document.getElementById('sec-auth').classList.remove('hidden'); 
+                document.getElementById('auth-warning').classList.remove('hidden'); 
+                document.getElementById('target-doc-name').innerText = contract.type; 
+            } catch(e) { alert("Invalid Access Key or Token"); console.error(e); } 
+        };
+
+        window.openDashboard = function(){ 
+            if(!user.name || !user.nid) { const loginModal = document.getElementById('modal-repo-login'); loginModal.classList.remove('hidden'); loginModal.classList.add('flex'); } else { document.getElementById('modal-dashboard').classList.remove('hidden'); renderRepo(); }
+        };
+        window.performLogin = function() {
+            const name = document.getElementById('login-name').value.trim(); const nid = document.getElementById('login-nid').value.trim();
+            if(!name || !nid) return alert("Enter details.");
+            user.name = name; user.nid = nid;
+            document.getElementById('modal-repo-login').classList.add('hidden'); document.getElementById('modal-repo-login').classList.remove('flex');
+            document.getElementById('modal-dashboard').classList.remove('hidden'); renderRepo(); showToast(`Welcome back, ${user.name}`);
+        };
+        window.closeDashboard = function(){ document.getElementById('modal-dashboard').classList.add('hidden'); selectedDocId = null; };
+
+        window.selectRepoRow = function(id) {
+            selectedDocId = id;
+            document.querySelectorAll('.repo-row').forEach(row => { row.classList.remove('selected-row'); });
+            const selectedRow = document.getElementById(`row-${id}`);
+            if(selectedRow) selectedRow.classList.add('selected-row');
+        };
+
+        window.renderRepo = async function(){
+            const tbody = document.getElementById('repo-body'); tbody.innerHTML='<tr><td colspan="6" class="text-center py-4"><i class="fas fa-circle-notch fa-spin text-[#d4af37]"></i> Syncing with Cloud...</td></tr>'; 
+            let rows = await loadAll();
+            tbody.innerHTML=''; 
+
+            if(user.nid) { rows = rows.filter(doc => { return doc.parties.some(p => p.nid === user.nid); }); }
+            
+            const filterTerm = (document.getElementById('repo-filter')?.value || '').toLowerCase();
+            rows = rows.reverse().filter(c => { 
+                if(!filterTerm) return true; 
+                const typeStr = (c.type || '').toLowerCase();
+                const codeStr = (c.docNumber || '').toString().toLowerCase();
+                const nameStr = c.parties.map(p => (p.name || '').toLowerCase()).join(' ');
+                const idStr = c.parties.map(p => (p.nid || '').toString().toLowerCase()).join(' ');
+                return typeStr.includes(filterTerm) || codeStr.includes(filterTerm) || nameStr.includes(filterTerm) || idStr.includes(filterTerm);
+            });
+            
+            if(user.name) document.getElementById('dash-user').innerText = user.name;
+
+            if(!rows.length) { 
+                tbody.innerHTML='<tr><td colspan="6" class="text-center py-8 text-xs text-gray-500 italic">No documents found matching your criteria.</td></tr>'; 
+                return; 
+            }
+            
+            rows.forEach((c)=>{
+                const done = c.status==='EXECUTED';
+                const badge = done ? '<span class="text-green-500 border border-green-500/30 px-2 py-1 rounded text-[10px] font-bold">EXECUTED</span>' : '<span class="text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded text-[10px] font-bold">PENDING</span>';
+                const signedCount = c.parties.filter(p=>p.signed).length; const total = c.parties.length;
+                const isVideoDoc = c.requiresVideo !== false; 
+                const typeIcon = isVideoDoc ? '<i class="fas fa-video text-blue-400 mr-2" title="Video Secured"></i>' : '<i class="fas fa-file-alt text-gray-400 mr-2" title="Standard Text"></i>';
+                
+                const roomBtnClass = done ? "bg-gray-800 text-gray-500 cursor-not-allowed opacity-50" : "bg-[#d4af37]/20 text-[#d4af37] hover:bg-[#d4af37] hover:text-black";
+                const roomBtnText = done ? "Sealed" : "Room";
+                const roomBtnAttr = done ? "disabled" : `onclick="openSigningRoomFromRepo('${c.id}')"`;
+                
+                tbody.innerHTML += `<tr id="row-${c.id}" onclick="selectRepoRow('${c.id}')" class="repo-row border-b border-gray-800 cursor-pointer hover:bg-white/5 transition"><td class="py-3 pl-4">${badge}</td><td class="py-3 text-[#d4af37] font-mono">${c.docNumber||'--'}</td><td class="py-3 text-white font-bold flex items-center">${typeIcon} ${c.type}</td><td class="py-3 text-xs text-gray-400">${signedCount}/${total} Signed</td><td class="py-3 text-xs font-mono text-gray-500">${new Date(c.created).toLocaleDateString()}</td><td class="py-3 pr-4 text-right"><button onclick="openRepoDetail('${c.id}')" class="text-[10px] border border-white/20 hover:bg-white/10 px-3 py-1 rounded text-white transition mr-2">View Detail</button><button ${roomBtnAttr} class="text-[10px] px-3 py-1 rounded transition ${roomBtnClass}">${roomBtnText}</button></td></tr>`;
+            });
+        };
+        
+        window.openSigningRoomFromRepo = async function(id) {
+            const all = await loadAll(); contract = all.find(c=>c.id===id);
+            if(!contract) return;
+            document.getElementById('modal-dashboard').classList.add('hidden');
+            renderSigningRoom();
+        };
+
+        window.openRepoDetail = async function(id){
+            const modal = document.getElementById('modal-repo-detail'); const body = document.getElementById('repo-detail-body');
+            body.innerHTML = '<div class="text-center text-[#d4af37] py-10"><i class="fas fa-circle-notch fa-spin text-3xl"></i></div>';
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            let rows = await loadAll(); const doc = rows.find(r=>r.id===id);
+            if(!doc) { modal.classList.add('hidden'); return; }
+            activeDetailDoc = doc;
+
+            let leftSideHtml = ''; 
+            doc.parties.forEach(p=>{
+                const meta = p.evidence || {ip:'Pending', gps:'Pending'}; const vidKey = `${doc.id}-${p.nid}`;
+                const vidBtn = (p.signed && doc.requiresVideo !== false) ? `<button onclick="openVideoModal('${vidKey}')" class="text-[9px] bg-blue-600 hover:bg-blue-500 text-white border border-blue-400 px-3 py-1 rounded transition flex items-center gap-1 shadow-md"><i class="fas fa-play-circle"></i> View Affidavit</button>` : `<span class="text-[9px] text-gray-500 italic border border-gray-700 px-2 py-1 rounded">No Video</span>`;
+                leftSideHtml += `<div class="border border-white/10 rounded p-3 mb-2 text-xs bg-black/40"><div class="flex justify-between items-center mb-2"><span class="text-white font-bold flex items-center gap-2"><i class="fas fa-user-check text-[#d4af37]"></i> ${p.name}</span><span class="${p.signed?'text-green-400':'text-yellow-500'} font-mono text-[9px] border ${p.signed?'border-green-500/30':'border-yellow-500/30'} px-1 rounded">${p.signed?'VERIFIED':'WAITING'}</span></div><div class="flex justify-between items-end"><div class="grid grid-cols-1 gap-1 text-gray-400 font-mono text-[9px]"><div>ID: <span class="text-gray-300">${p.nid}</span></div><div>IP: <span class="text-blue-300">${meta.ip}</span></div><div>GPS: <span class="text-blue-300">${meta.gps}</span></div></div><div>${vidBtn}</div></div></div>`;
+            });
+
+            let displayContent = ''; let toggleBtn = '';
+            if(doc.status === 'EXECUTED') {
+                 const enc = btoa(unescape(encodeURIComponent(doc.text)));
+                 displayContent = `<div id="repo-view-plain-${doc.id}" class="hidden">${generatePaperHTML(doc)}</div><div id="repo-view-enc-${doc.id}" class="encrypted-view">${enc}</div>`;
+                 toggleBtn = `<button onclick="toggleRepoView('${doc.id}')" id="btn-toggle-${doc.id}" class="mb-4 w-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-3 py-3 rounded text-xs uppercase font-bold tracking-widest transition"><i class="fas fa-unlock"></i> Decrypt & Validate</button>`;
+            } else {
+                 displayContent = generatePaperHTML(doc);
+            }
+
+            body.innerHTML = `<div class="flex justify-between items-start gap-4 mb-4 border-b border-white/10 pb-4"><div><div class="text-[10px] text-[#d4af37] uppercase tracking-widest">EssProof Record</div><div class="text-2xl text-white font-bold">${doc.type}</div><div class="flex items-center gap-3 mt-1"><span class="text-lg text-[#d4af37] font-mono font-bold">CODE: ${doc.docNumber}</span></div></div><div><button onclick="printDocument('${doc.id}')" class="text-[10px] bg-white text-black px-3 py-1 rounded font-bold hover:bg-gray-200 transition"><i class="fas fa-print mr-1"></i> Print/PDF</button></div></div><div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-full"><div class="md:col-span-4 overflow-y-auto max-h-[500px] pr-2"><div class="text-[10px] text-[#d4af37] uppercase tracking-widest mb-3 border-b border-white/10 pb-1">Biometric Evidence Chain</div>${leftSideHtml}</div><div class="md:col-span-8 h-full overflow-y-auto pb-10" id="repo-content-area-${doc.id}"><div class="text-[10px] text-[#d4af37] uppercase tracking-widest mb-2">Original Instrument Content</div>${toggleBtn} ${displayContent}</div></div>`;
+        };
+        window.closeRepoDetail = function(){ document.getElementById('modal-repo-detail').classList.add('hidden'); document.getElementById('modal-repo-detail').classList.remove('flex'); activeDetailDoc = null; };
+        
+        window.toggleRepoView = function(id) { 
+            const plain = document.getElementById(`repo-view-plain-${id}`); const enc = document.getElementById(`repo-view-enc-${id}`); const btn = document.getElementById(`btn-toggle-${id}`);
+            if(plain.classList.contains('hidden')) {
+                plain.classList.remove('hidden'); enc.classList.add('hidden');
+                btn.innerHTML = '<i class="fas fa-lock"></i> Re-Encrypt'; btn.className = "mb-4 w-full bg-green-600 text-white px-3 py-3 rounded text-xs uppercase font-bold tracking-widest transition hover:bg-green-700";
+            } else {
+                plain.classList.add('hidden'); enc.classList.remove('hidden');
+                btn.innerHTML = '<i class="fas fa-unlock"></i> Decrypt & Validate'; btn.className = "mb-4 w-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-3 py-3 rounded text-xs uppercase font-bold tracking-widest transition";
+            } 
+        };
+
+        window.submitAuth = function() {
+            const n = document.getElementById('auth-name').value; const i = document.getElementById('auth-nid').value; if(!n || !i) return alert("Required");
+            const btn = document.getElementById('btn-auth'); btn.innerText = "Scanning..."; document.getElementById('bio-scan-line').style.display = 'block';
+            setTimeout(() => {
+                user.name=n; user.nid=i;
+                if(contract) {
+                    const idx = contract.parties.findIndex(p=>p.nid===user.nid); if(idx===-1) { alert("Access Denied: ID not found in roster."); location.reload(); return; }
+                    document.getElementById('sec-auth').classList.add('hidden'); 
+                    renderSigningRoom();
+                } else {
+                    document.getElementById('sec-auth').classList.add('hidden'); document.getElementById('sec-create').classList.remove('hidden'); document.getElementById('creator-name-display').innerText=user.name; renderRosterInputs();
+                }
+            }, 1000);
+        };
+
+        window.toggleMode = function() { const m = document.getElementById('contract-mode').value; document.getElementById('roster-section').className = m==='multi' ? 'bg-white/5 p-4 rounded border border-white/10' : 'hidden'; if(m==='multi' && document.getElementById('roster-list').children.length===0) addRow(); };
+        window.addRow = function() { const div = document.createElement('div'); div.className = "flex gap-2 items-center mb-2 fade-in"; div.innerHTML = `<input type="text" placeholder="Name" class="p-name w-1/2 input-field p-2 text-xs rounded"><input type="text" placeholder="ID" class="p-nid w-1/2 input-field p-2 text-xs rounded"><button onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-times"></i></button>`; document.getElementById('roster-list').appendChild(div); };
+        window.renderRosterInputs = function() { document.getElementById('roster-list').innerHTML = `<div class="flex gap-2 items-center mb-2 opacity-50"><input value="${user.name}" readonly class="w-1/2 input-field p-2 text-xs rounded border-[#d4af37]"><input value="${user.nid}" readonly class="w-1/2 input-field p-2 text-xs rounded"><span class="text-[9px] text-[#d4af37] uppercase font-bold px-2">Initiator</span></div>`; };
+
+        window.smartGoToSigning = async function() {
+            const rawText = document.getElementById('create-text').value; const text = rawText || "Standard Agreement"; const mode = document.getElementById('contract-mode').value;
+            const tmplKey = document.getElementById('template-select').value;
+            if(tmplKey && tmplKey!=='custom'){ const inputs = document.querySelectorAll('#smart-inputs input'); for(const inp of inputs){ if(!inp.value.trim()){ alert("Fill template fields"); return; } } }
+            let parties = [{name:user.name, nid:user.nid, signed:false, role:'Initiator'}];
+            if(mode==='multi') { const rows = document.querySelectorAll('#roster-list .flex'); for(let i=1; i<rows.length; i++) { const n = rows[i].querySelector('.p-name')?.value; const id = rows[i].querySelector('.p-nid')?.value; if(!n || !id){ alert("Fill signatory details"); return; } parties.push({name:n, nid:id, signed:false, role:'Signatory'}); } }
+            
+            const existing = await loadAll(); 
+            const docNumber = generateDocNumber(existing.map(r=>r.docNumber).filter(Boolean)); 
+            const newId = 'LC-'+Math.floor(Math.random()*1000000);
+            const roomKey = Math.floor(100000000000000 + Math.random() * 900000000000000).toString();
+            const requiresVideo = (selectedAuthMode === 'video');
+
+            pendingContractData = { 
+                id: newId, 
+                docNumber: docNumber, 
+                roomKey: roomKey, 
+                type: document.getElementById('template-select').value || 'Custom Instrument', 
+                text: text, 
+                parties: parties, 
+                status: 'PENDING', 
+                hash: '', 
+                requiresVideo: requiresVideo, 
+                created: new Date().toISOString() 
+            };
+            calculateAndShowPayment();
+        };
+
+        window.calculateAndShowPayment = function() {
+            const amountInput = document.querySelector('input[data-field="Amount"]') || document.querySelector('input[data-field="Price"]');
+            let amountValue = 0; if (amountInput && amountInput.value) { const raw = amountInput.value.replace(/,/g, ''); if (!isNaN(raw) && parseFloat(raw) > 0) amountValue = parseFloat(raw); }
+            const count = pendingContractData.parties.length;
+            const fee = amountValue > 0 ? PricingEngine.calculateFinancial(amountValue, count) : PricingEngine.calculateNonFinancial(count);
+            document.getElementById('pay-total').innerText = `$${fee}.00`; document.getElementById('pay-tier').innerText = amountValue>0 ? "FINANCIAL" : "STANDARD"; document.getElementById('inv-num').innerText = Math.floor(Math.random() * 900000);
+            document.getElementById('modal-payment').classList.remove('hidden'); document.getElementById('modal-payment').classList.add('flex');
+        };
+
+        window.processPayment = function() {
+            const btn = document.getElementById('btn-pay-confirm'); btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...'; btn.disabled = true;
+            setTimeout(async () => {
+                await save(pendingContractData); contract = pendingContractData;
+                document.getElementById('modal-payment').classList.add('hidden'); document.getElementById('modal-payment').classList.remove('flex');
+                document.getElementById('sec-create').classList.add('hidden');
+                renderSigningRoom();
+                showToast("Invoice Paid. Cloud Room Created.");
+            }, 2000);
+        };
+
+        window.renderSigningRoom = function() {
+            if(!contract) return;
+            document.querySelectorAll('section').forEach(e=>e.classList.add('hidden')); 
+            document.getElementById('sec-signing-room').classList.remove('hidden');
+            
+            document.getElementById('room-code').innerText = contract.docNumber;
+            document.getElementById('room-doc-type').innerText = contract.type;
+            document.getElementById('room-text').innerText = contract.text;
+
+            const rosterContainer = document.getElementById('room-roster'); rosterContainer.innerHTML = '';
+            const sigsPreview = document.getElementById('room-sigs-preview'); sigsPreview.innerHTML = '';
+            let signedCount = 0;
+
+            contract.parties.forEach((p, idx) => {
+                if(p.signed) signedCount++;
+                const isMe = p.nid === user.nid;
+                const vidKey = `${contract.id}-${p.nid}`;
+                const vidClass = p.signed ? 'status-gold' : 'status-gray';
+                const sigClass = p.signed ? 'status-gold' : 'status-gray';
+                
+                const vidAction = (p.signed && contract.requiresVideo !== false) ? `onclick="openVideoModal('${vidKey}')"` : '';
+                const videoIconStyle = (contract.requiresVideo === false) ? 'opacity:0.3; cursor:not-allowed;' : '';
+
+                const card = `
+                    <div class="participant-card ${isMe ? 'active-user' : ''}">
+                        <div>
+                            <div class="text-[11px] font-bold text-white flex items-center gap-2"><span class="text-[#d4af37]">${idx+1}.</span> ${p.name} ${isMe ? '<span class="bg-[#d4af37] text-black text-[8px] px-1 rounded font-bold">YOU</span>' : ''}</div>
+                            <div class="text-[9px] text-gray-500 font-mono">${p.role}</div>
+                        </div>
+                        <div class="flex"><div class="icon-box ${vidClass}" style="${videoIconStyle}" ${vidAction} title="Video Affidavit"><i class="fas fa-video"></i></div><div class="icon-box ${sigClass}" title="Signature Status"><i class="fas fa-file-signature"></i></div></div>
+                    </div>`;
+                rosterContainer.innerHTML += card;
+                if(p.signed) {
+                    sigsPreview.innerHTML += `<div class="flex flex-col gap-1"><div class="h-10 border-b border-black/50 mb-1 w-24 relative"><img src="${p.signatureImg}" class="h-full object-contain"></div><span class="font-bold uppercase text-[9px]">${p.name}</span></div>`;
+                }
+            });
+
+            document.getElementById('room-status-text').innerText = `${signedCount} / ${contract.parties.length} Signed`;
+            
+            const isFinished = signedCount === contract.parties.length;
+            const tokenBox = document.getElementById('room-token-box');
+            const copyBtn = document.getElementById('btn-copy-token');
+            
+            if (isFinished) {
+                tokenBox.innerText = "--- SESSION CLOSED / SEALED ---"; tokenBox.style.color = "#ef4444"; tokenBox.onclick = null;
+                copyBtn.disabled = true; copyBtn.classList.add('opacity-50', 'cursor-not-allowed'); copyBtn.innerText = "Closed";
+            } else {
+                tokenBox.innerText = contract.roomKey || "Generating..."; tokenBox.style.color = "#d4af37"; tokenBox.onclick = copyToken;
+                copyBtn.disabled = false; copyBtn.classList.remove('opacity-50', 'cursor-not-allowed'); copyBtn.innerText = "Copy Key";
+            }
+
+            const actionArea = document.getElementById('room-action-area');
+            const sealedArea = document.getElementById('room-sealed-area');
+            const printBtn = document.getElementById('btn-print-room');
+
+            if (isFinished) {
+                sealedArea.classList.remove('hidden'); document.getElementById('room-final-hash').innerText = contract.hash || "SEALED";
+                printBtn.classList.remove('hidden'); actionArea.classList.add('hidden');
+            } else {
+                sealedArea.classList.add('hidden'); printBtn.classList.add('hidden');
+                const myRecord = contract.parties.find(p => p.nid === user.nid);
+                if(myRecord && !myRecord.signed) {
+                    actionArea.classList.remove('hidden'); document.getElementById('room-user-name').innerText = user.name;
+                } else {
+                    actionArea.classList.add('hidden');
+                }
+            }
+        };
+
+        window.copyToken = function() { const txt = document.getElementById('room-token-box').innerText; if(txt.includes("CLOSED")) return; copyToClipboard(txt, 'Access Key Copied'); };
+
+        window.goToSigningSafe = function() {
+            document.querySelectorAll('section').forEach(e=>e.classList.add('hidden')); 
+            document.getElementById('sec-sign').classList.remove('hidden'); 
+            document.getElementById('sign-name-display').innerText=user.name; 
+            document.getElementById('sign-id-display').innerText=user.nid;
+
+            const videoContainer = document.getElementById('video-container');
+            const btnSeal = document.getElementById('btn-seal');
+
+            if(contract.requiresVideo !== false) {
+                videoContainer.classList.remove('hidden');
+                btnSeal.disabled = true; btnSeal.classList.add('opacity-50', 'cursor-not-allowed');
+                setTimeout(() => { initCam(); initSignaturePad(); }, 200);
+            } else {
+                videoContainer.classList.add('hidden');
+                btnSeal.disabled = false; btnSeal.classList.remove('opacity-50', 'cursor-not-allowed');
+                setTimeout(() => { initSignaturePad(); }, 200);
+            }
+        };
+
+        async function initCam() {
+            try {
+                videoBlobCaptured = null; const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+                document.getElementById('webcam').srcObject=s; document.getElementById('webcam').classList.remove('hidden'); document.getElementById('cam-placeholder').classList.add('hidden');
+                setupRecorder(s);
+            } catch(e){ showToast('Camera blocked','error',3000); }
+        }
+
+        function setupRecorder(stream){
+            mediaRecorder = new MediaRecorder(stream); recChunks = []; mediaRecorder.ondataavailable = e => { if(e.data.size>0) recChunks.push(e.data); };
+            mediaRecorder.onstop = ()=> {
+                const blob = new Blob(recChunks, {type:'video/webm'}); const player = document.getElementById('webcam'); player.srcObject=null; videoBlobCaptured = blob;
+                document.getElementById('btn-seal').disabled=false; document.getElementById('btn-seal').classList.remove('opacity-50','cursor-not-allowed');
+                document.getElementById('btn-record').innerText="Evidence Captured"; document.getElementById('btn-record').classList.remove('bg-red-900'); document.getElementById('btn-record').classList.add('bg-green-900'); player.srcObject = stream;
+            };
+        }
+
+        window.toggleRecord = function() {
+            const b = document.getElementById('btn-record'); if(!mediaRecorder) return showToast('Recorder not ready','error',2000);
+            if(!isRec) { isRec=true; recChunks=[]; b.innerText="Recording... (10s)"; b.classList.add('bg-red-900','text-white'); setTimeout(()=>{ if(isRec) stopRecord(); }, 10000); mediaRecorder.start(); } else { stopRecord(); }
+        };
+        function stopRecord(){ if(!isRec) return; isRec=false; if(mediaRecorder && mediaRecorder.state==='recording') mediaRecorder.stop(); }
+
+        // --- FIXED FINALIZATION LOGIC (CRITICAL SYNC FIX) ---
+        window.finalizeSigSimple = async function() {
+            const btn = document.getElementById('btn-seal');
+            const requiresVideo = contract.requiresVideo !== false;
+
+            if(requiresVideo && !videoBlobCaptured) { alert("Video evidence required."); return; }
+            if(!contract) { alert("Contract data missing."); return; }
+            
+            try {
+                btn.disabled = true; btn.innerText = "SYNCING & SEALING...";
+                
+                // 1. Fetch Latest Data First (Crucial Step!)
+                const snapshot = await db.ref('contracts/' + contract.id).get();
+                if (!snapshot.exists()) throw new Error("Document vanished from cloud.");
+                let freshContract = snapshot.val();
+
+                const sigDataUrl = document.getElementById('sig-canvas').toDataURL();
+                const method = requiresVideo ? "Biometric Video" : "Standard Digital Signature";
+                document.getElementById('process-status').classList.remove('hidden'); document.getElementById('meta-disp').innerText = `IP: ${getMockIP()} | Auth: ${method}`;
+                
+                // 2. Modify Fresh Data
+                const idx = freshContract.parties.findIndex(p => p.nid === user.nid);
+                if(idx!==-1) {
+                    freshContract.parties[idx].signed = true; 
+                    freshContract.parties[idx].date = new Date().toUTCString();
+                    freshContract.parties[idx].evidence = {ip:getMockIP(), gps:getMockGPS()}; // Correctly save IP/GPS
+                    freshContract.parties[idx].signatureImg = sigDataUrl;
+                } else { throw new Error("ID mismatch during sync."); }
+
+                if(requiresVideo && videoBlobCaptured) {
+                    await saveVideoToDB(`${freshContract.id}-${user.nid}`, videoBlobCaptured);
+                }
+                
+                // 3. Check All Signed on Fresh Data
+                const allSigned = freshContract.parties.every(p => p.signed);
+                if(allSigned) { 
+                    freshContract.status = 'EXECUTED'; 
+                    freshContract.hash = await computeHash(JSON.stringify(freshContract)); 
+                }
+                
+                // 4. Save Final State
+                await db.ref('contracts/' + freshContract.id).set(freshContract);
+                
+                // 5. Update Local State
+                contract = freshContract;
+                
+                showToast("Signed & Synced Successfully", "success");
+                document.getElementById('sec-sign').classList.add('hidden');
+                renderSigningRoom();
+                
+            } catch (error) { console.error(error); alert("Sync Error: " + error.message); btn.disabled = false; btn.innerText = "Retry Sealing"; }
+        };
+
+        window.printDocument = async function(id) {
+            const allDocs = await loadAll(); const doc = allDocs.find(d => d.id === id) || contract;
+            if(!doc) return;
+            const safeText = escapeHtml(doc.text);
+            const paperContent = generatePaperHTML({...doc, text: safeText});
+            const printContent = `<html><head><title>Print ${doc.docNumber}</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet"><style>body { margin: 0; padding: 0; background: #ccc; } .paper-view { font-family: 'Times New Roman', serif; color: black; background: #fff; padding: 40px; position: relative; margin: 20px auto; width: 210mm; min-height: 297mm; box-sizing: border-box; } .paper-watermark { position: absolute; top: 40%; left: 30%; transform: rotate(-45deg); font-size: 80px; color: rgba(0,0,0,0.05); font-family: 'Cinzel', serif; z-index: 0; } .paper-header { text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 20px; margin-bottom: 30px; position: relative; z-index: 1; } .paper-header h1 { font-family: 'Cinzel', serif; font-size: 16px; margin: 0; } .paper-title { font-size: 18px; text-transform: uppercase; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; font-weight: bold; } .paper-body { white-space: pre-wrap; word-wrap: break-word; line-height: 1.6; text-align: justify; font-size: 14px; position: relative; z-index: 1; } .paper-sigs { margin-top: 50px; display: flex; gap: 30px; flex-wrap: wrap; position: relative; z-index: 1; } .paper-sig-block { border-top: 1px solid #000; padding-top: 5px; width: 200px; font-size: 11px; } .paper-hash-box { background-color: #fffbeb; border: 2px solid #d4af37; padding: 10px; margin-top: 40px; text-align: center; font-family: monospace; font-size: 10px; color: #855a16; position: relative; z-index: 1; } @media print { body { background: white; } .paper-view { margin: 0; box-shadow: none; } } </style></head><body>${paperContent}</body></html>`;
+            const win = window.open('', '', 'height=800,width=900'); win.document.write(printContent); win.document.close(); 
+            setTimeout(() => { win.print(); }, 500);
+        };
+
+        window.openVideoModal = async function(vidKey){ const blob = await loadVideoFromDB(vidKey); if(!blob) return showToast('No Cloud video found.','error',3000); const url = URL.createObjectURL(blob); const modal = document.getElementById('modal-video'); const player = document.getElementById('evidence-player'); player.src = url; modal.classList.remove('hidden'); modal.classList.add('flex'); };
+        window.closeVideoModal = function(){ const modal = document.getElementById('modal-video'); const player = document.getElementById('evidence-player'); player.pause(); player.src=""; modal.classList.add('hidden'); modal.classList.remove('flex'); };
+
+    </script>
+</body>
+</html>
