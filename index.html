@@ -14,6 +14,10 @@
     <style>
         :root { --bg: #000000; --panel: rgba(13, 18, 35, 0.95); --glass-border: rgba(255, 255, 255, 0.08); --gold: #d4af37; --gold-light: #f7ef8a; --gold-dark: #855a16; --ink: #e2e8f0; }
         #modal-dashboard { z-index: 8000 !important; } #modal-repo-detail { z-index: 9000 !important; } #modal-payment { z-index: 9500 !important; } #modal-judiciary-auth, #modal-judiciary-view { z-index: 11000 !important; } #modal-video { z-index: 12000 !important; } #modal-repo-login { z-index: 13000 !important; } 
+        /* New Modals Z-Index */
+        .info-modal { z-index: 10000 !important; }
+        #side-menu { z-index: 20000 !important; }
+        
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
         h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; } .logo-font { font-family: 'Cinzel Decorative', serif; } .legal-font { font-family: 'Playfair Display', serif; } .mono-font { font-family: 'JetBrains Mono', monospace; }
         .glass-panel { background: var(--panel); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); }
@@ -87,9 +91,119 @@
                     <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20"><i class="fas fa-folder-open"></i></div>
                     <span class="hidden sm:inline">Repository</span>
                 </button>
+                <button onclick="toggleMenu()" class="ml-2 text-[#d4af37] hover:text-white transition text-xl px-2">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </header>
+
+    <div id="side-menu" class="fixed inset-y-0 right-0 w-72 bg-[#0d1223] border-l border-[#d4af37]/30 transform translate-x-full transition duration-300 ease-in-out flex flex-col shadow-2xl p-6">
+        <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+            <span class="text-[#d4af37] font-bold uppercase tracking-widest text-sm">Menu</span>
+            <button onclick="toggleMenu()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <nav class="flex flex-col gap-4">
+            <button onclick="openInfoModal('legal')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-scale-balanced w-6"></i> About & Legal</button>
+            <button onclick="openInfoModal('pricing')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-tags w-6"></i> Pricing Formula</button>
+            <button onclick="openInfoModal('faq')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-question-circle w-6"></i> FAQ</button>
+            <button onclick="openInfoModal('contact')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-envelope w-6"></i> Contact Support</button>
+            <button onclick="openInfoModal('video')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-play-circle w-6"></i> Video Guide</button>
+        </nav>
+        <div class="mt-auto text-[9px] text-gray-600 text-center">
+            Essproof Systems v2.1<br>Secure. Private. Boundless.
+        </div>
+    </div>
+
+    <div id="modal-legal" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeInfoModal('legal')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl text-[#d4af37] brand-font mb-6 border-b border-white/10 pb-2">Terms of Service & Legal Disclaimer</h3>
+            <div class="text-xs text-gray-300 space-y-4 leading-relaxed font-serif text-justify">
+                <p><strong class="text-white block mb-1">1. Architectural Pedigree & Expertise</strong> The Essproof platform is the result of synergetic collaboration among international experts. Our architectural foundation is supported by a team with over 28 years of high-level legal experience, alongside senior advisors in Management, Computer Science, AI, EU Regulatory Law, and a Solicitor of the Supreme Court (Australia). <em>Note: The disclosure of this professional background is intended solely to demonstrate the rigorous intellectual and technical standards behind the platform's design. It is NOT an advertisement of legal services, nor does it establish a client-attorney relationship.</em></p>
+                <p><strong class="text-white block mb-1">2. Platform Nature (Non-Institutional)</strong> Essproof operates exclusively as a Private, Independent, and Technical Facilitator. We explicitly declare that we are NOT a law firm, notary public, court of law, arbitration center, or government entity. We provide a secure, transparent tool for parties to generate "Self-Willed Instruments" based on their own mutual consent and intent.</p>
+                <p><strong class="text-white block mb-1">3. The "Blind Facilitator" Policy & User Responsibility</strong> We operate as a "Blind Technical Facilitator." This means we do not verify the real-world identities, social relationships, financial solvency, or underlying intent of the users. The Initiator is solely responsible for entering correct names/IDs. Essproof bears no liability for fraud, mistaken identity, or disputes arising from private interactions.</p>
+                <p><strong class="text-white block mb-1">4. Limitation of Liability & Refunds</strong> Essproof assumes responsibility solely for proven technical failures directly attributable to the Platform's infrastructure. In such specific events, our liability is strictly limited to the refund of the service fee paid. The Platform bears no further liability for consequential damages.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-pricing" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
+        <div class="w-full max-w-lg bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative">
+            <button onclick="closeInfoModal('pricing')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl text-[#d4af37] brand-font mb-6 text-center">Pricing Transparency Policy</h3>
+            <div class="space-y-4 text-xs text-gray-300">
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span>Non-Financial Documents</span>
+                    <span class="text-white font-bold">$19.00 Fixed</span>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-[#d4af37] font-bold uppercase tracking-widest text-[10px]">Financial Documents</p>
+                    <div class="flex justify-between"><span>$0 - $1,000</span><span class="text-white">$20.00 Fixed</span></div>
+                    <div class="flex justify-between"><span>$1,001 - $10,000</span><span class="text-white">Base $20 + $2 / $1k</span></div>
+                    <div class="flex justify-between"><span>$10,001 - $100,000</span><span class="text-white">Base $38 + $5 / $5k</span></div>
+                    <div class="flex justify-between"><span>Above $100,000</span><span class="text-white">0.15% - 0.08%</span></div>
+                </div>
+                <div class="bg-blue-900/20 p-3 rounded border border-blue-500/30 mt-4">
+                    <p class="text-blue-200 font-bold mb-1">Discounts</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Express Mode:</strong> 15% OFF (For high value docs only).</li>
+                        <li><strong>Student ID:</strong> 30% OFF Final Fee.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-faq" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative max-h-[80vh] overflow-y-auto">
+            <button onclick="closeInfoModal('faq')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl text-[#d4af37] brand-font mb-6">Frequently Asked Questions</h3>
+            <div class="space-y-4 text-sm text-gray-300">
+                <details class="bg-black/30 p-3 rounded border border-white/5 cursor-pointer">
+                    <summary class="font-bold text-white hover:text-[#d4af37]">Is this legally binding?</summary>
+                    <p class="mt-2 text-xs leading-relaxed">Essproof provides a secure evidentiary record of intent. While we use advanced biometrics and timestamps, admissibility depends on local laws and the discretion of the competent authority/court. It serves as powerful private evidence.</p>
+                </details>
+                <details class="bg-black/30 p-3 rounded border border-white/5 cursor-pointer">
+                    <summary class="font-bold text-white hover:text-[#d4af37]">Can I delete a document?</summary>
+                    <p class="mt-2 text-xs leading-relaxed">No. Once a document is "Sealed & Executed" and hashed to the blockchain/database, it is immutable. This ensures the integrity of the platform.</p>
+                </details>
+                <details class="bg-black/30 p-3 rounded border border-white/5 cursor-pointer">
+                    <summary class="font-bold text-white hover:text-[#d4af37]">What happens if the other party doesn't sign?</summary>
+                    <p class="mt-2 text-xs leading-relaxed">The document remains in "PENDING" status. You are only charged the full sealing fee upon creation, but the final cryptographic seal is only applied when all parties sign.</p>
+                </details>
+                <details class="bg-black/30 p-3 rounded border border-white/5 cursor-pointer">
+                    <summary class="font-bold text-white hover:text-[#d4af37]">Is my video public?</summary>
+                    <p class="mt-2 text-xs leading-relaxed">Absolutely not. Video affidavits are encrypted and accessible only via the specific Access Key held by the participants or via a authorized Judicial Code.</p>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-contact" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
+        <div class="w-full max-w-md bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative">
+            <button onclick="closeInfoModal('contact')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl text-[#d4af37] brand-font mb-2">Contact Support</h3>
+            <p class="text-xs text-gray-400 mb-6">We usually respond within 24 hours.</p>
+            <div class="space-y-3">
+                <input type="email" id="contact-email" class="w-full input-field p-3 text-sm rounded" placeholder="Your Email Address">
+                <input type="text" id="contact-subject" class="w-full input-field p-3 text-sm rounded" placeholder="Subject (e.g. Billing Issue)">
+                <textarea id="contact-msg" class="w-full input-field p-3 text-sm rounded h-32 resize-none" placeholder="How can we help?"></textarea>
+                <button onclick="sendContactForm()" class="w-full gold-btn py-3 rounded text-xs font-bold uppercase tracking-widest shadow-lg">Send Message</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-video-guide" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
+        <div class="w-full max-w-3xl bg-[#0f172a] p-4 rounded-xl border border-[#d4af37]/30 shadow-2xl relative">
+            <button onclick="closeInfoModal('video')" class="absolute top-4 right-4 text-gray-500 hover:text-white z-50"><i class="fas fa-times text-xl"></i></button>
+            <div class="aspect-video bg-black rounded border border-white/10 flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-film text-5xl mb-4 opacity-50"></i>
+                <p class="uppercase tracking-widest text-sm font-bold">Video Tutorial Coming Soon</p>
+                <p class="text-xs mt-2">Our production team is finalizing the walkthrough.</p>
+            </div>
+        </div>
+    </div>
 
     <main class="w-full flex-grow flex flex-col relative">
 
@@ -113,9 +227,31 @@
                         <span class="text-gray-400">Extra Signatories Fee</span>
                         <span id="pay-extra" class="text-white font-mono">$0.00</span>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-[#d4af37]/30 flex justify-between items-center">
-                        <span class="text-[#d4af37] text-xs font-bold uppercase tracking-widest">Total Amount Due</span>
-                        <span id="pay-total" class="text-2xl text-[#d4af37] font-mono font-bold">$0.00</span>
+                    
+                    <div class="bg-black/30 p-3 rounded border border-white/10 mt-2">
+                        <label class="text-[10px] text-[#d4af37] uppercase font-bold tracking-widest block mb-2">Student Discount (30%)</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="pay-student-id" placeholder="Enter Student ID" class="flex-grow input-field p-2 text-xs rounded border-[#d4af37]/30">
+                            <button onclick="applyStudentDiscount()" class="bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37] px-3 py-1 rounded text-[10px] font-bold hover:bg-[#d4af37] hover:text-black transition">APPLY</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-[#d4af37]/30">
+                        <div id="discount-display-container" class="hidden mb-2">
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span>Standard Fee:</span>
+                                <span id="pay-original" class="line-through decoration-red-500">$0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-green-400">
+                                <span>Student Discount Applied:</span>
+                                <span id="pay-discount">-$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#d4af37] text-xs font-bold uppercase tracking-widest">Total Amount Due</span>
+                            <span id="pay-total" class="text-2xl text-[#d4af37] font-mono font-bold">$0.00</span>
+                        </div>
                     </div>
                 </div>
                 <div class="p-6 pt-0">
@@ -436,7 +572,7 @@
                         <h4 class="text-[10px] text-[#d4af37] uppercase tracking-widest mb-4 border-b border-white/10 pb-2">Participants</h4>
                         <div id="room-roster" class="flex-grow overflow-y-auto space-y-2">
                             </div>
-                        
+                         
                         <div class="mt-6 pt-4 border-t border-white/10">
                             <p class="text-[9px] text-gray-500 mb-2 uppercase tracking-widest font-bold">Room Access Key (15-Digit)</p>
                             <div class="bg-black p-3 rounded border border-[#d4af37] text-[#d4af37] font-mono text-lg font-bold text-center tracking-widest cursor-pointer hover:bg-white/5 transition" onclick="copyToken()" id="room-token-box">--</div>
@@ -521,6 +657,9 @@
         let videoBlobCaptured = null;
         let pendingContractData = null;
         let canvas, ctx, isDrawing = false;
+        
+        // GLOBAL FOR PAYMENT LOGIC
+        let currentPaymentRaw = 0; // Stores undiscounted fee
 
         // --- TEMPLATES ---
         const TEMPLATES = {
@@ -536,16 +675,54 @@
         };
 
         const PricingEngine = {
-            calculateNonFinancial: (partyCount) => { const base = 20; const extraPeople = Math.max(0, partyCount - 2); return base + (extraPeople * 2); },
-            calculateFinancial: (amount, partyCount) => {
-                let basePrice = 0; let extraPerPerson = 0;
-                if (amount <= 1000) { basePrice = 15; extraPerPerson = 5; } 
-                else if (amount <= 10000) { basePrice = 39; extraPerPerson = 7; } 
-                else if (amount <= 50000) { basePrice = 79; extraPerPerson = 10; } 
-                else if (amount <= 100000) { basePrice = 119; extraPerPerson = 15; } 
-                else { basePrice = amount * 0.002; extraPerPerson = 50; }
-                const extraPeople = Math.max(0, partyCount - 2);
-                return Math.floor(basePrice + (extraPeople * extraPerPerson)); 
+            calculate: (contractValue, partyCount, mode, hasStudentId) => {
+                let baseFee = 0;
+
+                // Step 2: Calculate Base Fee
+                if (contractValue <= 0) {
+                    baseFee = 19; // Non-Financial
+                } else {
+                    // Financial Docs (Based on Total Contract Value)
+                    if (contractValue <= 1000) {
+                        baseFee = 20;
+                    } else if (contractValue <= 10000) {
+                        // Base $20 + $2 per every $1,000 increment above $1,000
+                        const increments = Math.ceil((contractValue - 1000) / 1000);
+                        baseFee = 20 + (increments * 2);
+                    } else if (contractValue <= 100000) {
+                        // Base Fee (calc at $10k) + ($5 per every $5,000 increment above $10,000)
+                        const baseAt10k = 38;
+                        const increments = Math.ceil((contractValue - 10000) / 5000);
+                        baseFee = baseAt10k + (increments * 5);
+                    } else if (contractValue <= 500000) {
+                        baseFee = contractValue * 0.0015; // 0.15%
+                    } else if (contractValue <= 1000000) {
+                        baseFee = contractValue * 0.0012; // 0.12%
+                    } else if (contractValue <= 10000000) {
+                        baseFee = contractValue * 0.0010; // 0.10%
+                    } else {
+                        baseFee = contractValue * 0.0008; // 0.08%
+                    }
+                }
+
+                // Step 3: Add Extra Signatories Fee (First 3 Free)
+                const extraPeopleFee = Math.max(0, partyCount - 3) * 2;
+                let totalFee = baseFee + extraPeopleFee;
+
+                // Step 4: Apply "Express Mode" Logic (High Value Only)
+                if (mode === 'text' && totalFee > 100) {
+                    totalFee = totalFee * 0.85; // 15% Discount
+                }
+
+                // Step 5: Student Discount Logic (Moved to manual application in UI, but kept here for calculation consistency)
+                // Note: The UI now handles the final 30% reduction via button click
+                
+                return {
+                    total: Math.max(0, totalFee).toFixed(2),
+                    base: baseFee.toFixed(2),
+                    extra: extraPeopleFee.toFixed(2),
+                    isFinancial: contractValue > 0
+                };
             }
         };
 
@@ -963,12 +1140,69 @@
         };
 
         window.calculateAndShowPayment = function() {
-            const amountInput = document.querySelector('input[data-field="Amount"]') || document.querySelector('input[data-field="Price"]');
-            let amountValue = 0; if (amountInput && amountInput.value) { const raw = amountInput.value.replace(/,/g, ''); if (!isNaN(raw) && parseFloat(raw) > 0) amountValue = parseFloat(raw); }
-            const count = pendingContractData.parties.length;
-            const fee = amountValue > 0 ? PricingEngine.calculateFinancial(amountValue, count) : PricingEngine.calculateNonFinancial(count);
-            document.getElementById('pay-total').innerText = `$${fee}.00`; document.getElementById('pay-tier').innerText = amountValue>0 ? "FINANCIAL" : "STANDARD"; document.getElementById('inv-num').innerText = Math.floor(Math.random() * 900000);
-            document.getElementById('modal-payment').classList.remove('hidden'); document.getElementById('modal-payment').classList.add('flex');
+            // STEP 1: Determine Total Contract Value
+            let totalValue = 0;
+            const inputs = Array.from(document.querySelectorAll('#smart-inputs input'));
+
+            const getValue = (str) => {
+                 const match = inputs.find(i => i.dataset.field && i.dataset.field.toLowerCase() === str.toLowerCase());
+                 if(!match) return 0;
+                 return parseFloat(match.value.replace(/,/g, '')) || 0;
+            };
+
+            const monthlyRent = getValue('Monthly Rent');
+            if (monthlyRent > 0) {
+                let duration = getValue('Duration');
+                if (duration === 0) duration = getValue('Lease Term');
+                if (duration === 0) duration = 12;
+                totalValue = monthlyRent * duration;
+            } else {
+                const keywords = ['Amount', 'Price', 'Fee', 'Loan', 'Cost', 'Value', 'Sale Price'];
+                for (let k of keywords) {
+                    const val = getValue(k);
+                    if (val > 0) { totalValue = val; break; }
+                }
+            }
+
+            // Calculation (Pass false for studentId, as we do it manually in modal now)
+            const partyCount = pendingContractData.parties.length;
+            const result = PricingEngine.calculate(totalValue, partyCount, selectedAuthMode, false);
+
+            // STORE RAW TOTAL FOR DISCOUNT LOGIC
+            currentPaymentRaw = parseFloat(result.total);
+
+            // Update DOM with results
+            document.getElementById('pay-total').innerText = `$${result.total}`;
+            document.getElementById('pay-base').innerText = `$${result.base}`;
+            document.getElementById('pay-extra').innerText = `$${result.extra}`;
+            document.getElementById('pay-tier').innerText = result.isFinancial ? "FINANCIAL" : "NON-FINANCIAL";
+            document.getElementById('inv-num').innerText = Math.floor(Math.random() * 900000);
+
+            // Reset Discount UI
+            document.getElementById('discount-display-container').classList.add('hidden');
+            document.getElementById('pay-original').innerText = '';
+            document.getElementById('pay-discount').innerText = '';
+            document.getElementById('pay-student-id').value = '';
+
+            document.getElementById('modal-payment').classList.remove('hidden');
+            document.getElementById('modal-payment').classList.add('flex');
+        };
+
+        window.applyStudentDiscount = function() {
+            const idVal = document.getElementById('pay-student-id').value.trim();
+            if(!idVal) return alert("Please enter a valid Student ID.");
+            
+            // Calculate 30% discount
+            const discountAmount = currentPaymentRaw * 0.30;
+            const newTotal = currentPaymentRaw - discountAmount;
+
+            // Update UI
+            document.getElementById('discount-display-container').classList.remove('hidden');
+            document.getElementById('pay-original').innerText = `$${currentPaymentRaw.toFixed(2)}`;
+            document.getElementById('pay-discount').innerText = `-$${discountAmount.toFixed(2)}`;
+            document.getElementById('pay-total').innerText = `$${newTotal.toFixed(2)}`;
+            
+            showToast("Student Discount Applied!", "success");
         };
 
         window.processPayment = function() {
@@ -981,6 +1215,63 @@
                 showToast("Invoice Paid. Cloud Room Created.");
             }, 2000);
         };
+
+        // --- NEW MENU LOGIC ---
+        window.toggleMenu = function() {
+            const menu = document.getElementById('side-menu');
+            if (menu.classList.contains('translate-x-full')) {
+                menu.classList.remove('translate-x-full');
+            } else {
+                menu.classList.add('translate-x-full');
+            }
+        };
+
+        window.openInfoModal = function(type) {
+            toggleMenu(); // Close sidebar
+            // Close any open modals first
+            document.querySelectorAll('.info-modal').forEach(m => m.classList.add('hidden'));
+            document.querySelectorAll('.info-modal').forEach(m => m.classList.remove('flex'));
+            
+            const modal = document.getElementById(`modal-${type}`);
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeInfoModal = function(type) {
+            const modal = document.getElementById(`modal-${type}`);
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.sendContactForm = async function() {
+            const email = document.getElementById('contact-email').value;
+            const sub = document.getElementById('contact-subject').value;
+            const msg = document.getElementById('contact-msg').value;
+            if(!email || !msg) return alert("Please fill in all fields.");
+            
+            try {
+                await db.ref('inquiries').push({
+                    email: email,
+                    subject: sub,
+                    message: msg,
+                    date: new Date().toISOString()
+                });
+                showToast("Message Sent Successfully");
+                closeInfoModal('contact');
+                document.getElementById('contact-email').value = '';
+                document.getElementById('contact-msg').value = '';
+            } catch(e) {
+                console.error(e);
+                alert("Message Sent (Local Mode - Cloud Sync Failed)");
+                closeInfoModal('contact');
+            }
+        };
+
+        // --- EXISTING RENDER & SIGNING LOGIC ---
 
         window.renderSigningRoom = function() {
             if(!contract) return;
@@ -1096,7 +1387,6 @@
         };
         function stopRecord(){ if(!isRec) return; isRec=false; if(mediaRecorder && mediaRecorder.state==='recording') mediaRecorder.stop(); }
 
-        // --- FIXED FINALIZATION LOGIC (CRITICAL SYNC FIX) ---
         window.finalizeSigSimple = async function() {
             const btn = document.getElementById('btn-seal');
             const requiresVideo = contract.requiresVideo !== false;
@@ -1107,7 +1397,7 @@
             try {
                 btn.disabled = true; btn.innerText = "SYNCING & SEALING...";
                 
-                // 1. Fetch Latest Data First (Crucial Step!)
+                // 1. Fetch Latest Data First
                 const snapshot = await db.ref('contracts/' + contract.id).get();
                 if (!snapshot.exists()) throw new Error("Document vanished from cloud.");
                 let freshContract = snapshot.val();
@@ -1121,7 +1411,7 @@
                 if(idx!==-1) {
                     freshContract.parties[idx].signed = true; 
                     freshContract.parties[idx].date = new Date().toUTCString();
-                    freshContract.parties[idx].evidence = {ip:getMockIP(), gps:getMockGPS()}; // Correctly save IP/GPS
+                    freshContract.parties[idx].evidence = {ip:getMockIP(), gps:getMockGPS()}; 
                     freshContract.parties[idx].signatureImg = sigDataUrl;
                 } else { throw new Error("ID mismatch during sync."); }
 
