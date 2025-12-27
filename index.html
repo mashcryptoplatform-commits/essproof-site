@@ -19,7 +19,7 @@
         #side-menu { z-index: 20000 !important; }
         
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-        h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; } .logo-font { font-family: 'Cinzel Decorative', serif; } .legal-font { font-family: 'Playfair Display', serif; } .mono-font { font-family: 'JetBrains Mono', monospace; }
+        h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; } .logo-font { font-family: 'Cinzel Decorative', serif; } .legal-font { font-family: 'Times New Roman', Times, serif; } .mono-font { font-family: 'JetBrains Mono', monospace; }
         .glass-panel { background: var(--panel); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); }
         .gold-btn { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%); color: #fefce8; border: 1px solid #713f12; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; cursor: pointer; position: relative; z-index: 50; }
         .gold-btn:active { transform: scale(0.96); } .gold-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); background: #333; transform: none; }
@@ -495,6 +495,29 @@
                             <option value="poa">6. Limited Power of Attorney</option>
                             <option value="will">7. Last Will & Testament</option>
                             <option value="partnership">8. Partnership Agreement</option>
+                            
+                            <!-- NEW TEMPLATES ADDED HERE -->
+                            <option value="contractor">9. Independent Contractor Agreement</option>
+                            <option value="cease">10. Cease and Desist Letter</option>
+                            <option value="loi">11. Letter of Intent (Business)</option>
+                            <option value="sublease">12. Residential Sublease Agreement</option>
+                            <option value="equipment">13. Equipment Lease Agreement</option>
+                            <option value="consulting">14. Consulting Agreement</option>
+                            <option value="waiver">15. Release of Liability (Waiver)</option>
+                            <option value="demand">16. Demand Letter (Payment)</option>
+                            <option value="residence">17. Affidavit of Residence</option>
+                            <option value="ip_assign">18. IP Assignment Agreement</option>
+                            <option value="joint_venture">19. Joint Venture Agreement</option>
+                            <option value="loan_secured">20. Loan Agreement (Secured)</option>
+                            <option value="tos">21. Website Terms of Service</option>
+                            <option value="privacy">22. Website Privacy Policy</option>
+                            <option value="offer_letter">23. Employment Offer Letter</option>
+                            <option value="sales_agency">24. Sales Agency Agreement</option>
+                            <option value="event_rental">25. Event Space Rental</option>
+                            <option value="photo_service">26. Photography Services Contract</option>
+                            <option value="eula">27. Software License (EULA)</option>
+                            <option value="debt_settlement">28. Debt Settlement Agreement</option>
+
                             <option value="custom">Custom (Blank)</option>
                         </select>
                     </div>
@@ -519,8 +542,7 @@
                 <button id="btn-force-sign" onclick="smartGoToSigning()" class="gold-btn px-10 py-4 shadow-lg text-sm tracking-widest hover:bg-[#b45309]">INITIATE & SIGN <i class="fas fa-arrow-right ml-2"></i></button>
             </div>
         </section>
-
-        <section id="sec-sign" class="w-full max-w-4xl glass-panel p-0 hidden rounded-xl overflow-hidden border border-white/10 fade-in mx-auto mt-10">
+<section id="sec-sign" class="w-full max-w-4xl glass-panel p-0 hidden rounded-xl overflow-hidden border border-white/10 fade-in mx-auto mt-10">
             <div class="grid grid-cols-1 md:grid-cols-2">
                 <div class="bg-black p-8 flex flex-col justify-center items-center relative">
                     
@@ -669,68 +691,112 @@ Each counterparty must enter this key on the main screen in order to access the 
         // GLOBAL FOR PAYMENT LOGIC
         let currentPaymentRaw = 0; // Stores undiscounted fee
 
-        // --- TEMPLATES ---
+        // --- TEMPLATES (UPDATED WITH 20 NEW TYPES) ---
         const TEMPLATES = {
+            // --- ORIGINAL 8 ---
             'promissory': { fields: ['Lender Name', 'Borrower Name', 'Amount', 'Currency', 'Repayment Date'], text: (d) => `PROMISSORY NOTE (IOU)\n\nLENDER: ${d['Lender Name']}\nBORROWER: ${d['Borrower Name']}\n\nFor value received, the Borrower promises to pay to the Lender the sum of ${d['Amount']} ${d['Currency']}.\n\nRepayment Date: ${d['Repayment Date']}\n\nI, the Borrower, acknowledge receiving the above amount and commit to repaying it in full.` },
             'vehicle': { fields: ['Seller Name', 'Buyer Name', 'Vehicle Model', 'VIN/Chassis', 'Price'], text: (d) => `VEHICLE SALE AGREEMENT\n\nSELLER: ${d['Seller Name']}\nBUYER: ${d['Buyer Name']}\n\nVehicle: ${d['Vehicle Model']}\nVIN: ${d['VIN/Chassis']}\n\nSale Price: ${d['Price']}\n\nThe Seller declares full ownership of the vehicle and confirms it is free of legal claims.` },
             'rent': { fields: ['Landlord', 'Tenant', 'Property Address', 'Monthly Rent', 'Start Date'], text: (d) => `RESIDENTIAL LEASE AGREEMENT\n\nLANDLORD: ${d['Landlord']}\nTENANT: ${d['Tenant']}\n\nProperty: ${d['Property Address']}\nRent: ${d['Monthly Rent']} per month\n\nLease Start Date: ${d['Start Date']}\n\nThe Tenant agrees to pay rent on time and maintain the property in good condition.` },
             'nda': { fields: ['Disclosing Party', 'Receiving Party', 'Purpose'], text: (d) => `NON-DISCLOSURE AGREEMENT (NDA)\n\nBETWEEN: ${d['Disclosing Party']} AND ${d['Receiving Party']}\n\nPurpose: ${d['Purpose']}\n\nBoth parties agree to keep all exchanged information strictly confidential and use it solely for the purpose stated above.` },
             'freelance': { fields: ['Client', 'Freelancer', 'Scope of Work', 'Fee'], text: (d) => `FREELANCE SERVICE AGREEMENT\n\nCLIENT: ${d['Client']}\nFREELANCER: ${d['Freelancer']}\n\nScope: ${d['Scope of Work']}\nFee: ${d['Fee']}\n\nThe Freelancer agrees to deliver the work as specified. Ownership of the final work transfers to Client upon payment.` },
             'poa': { fields: ['Principal', 'Agent', 'Scope of Authority'], text: (d) => `LIMITED POWER OF ATTORNEY\n\nI, ${d['Principal']}, hereby appoint ${d['Agent']} as my attorney-in-fact.\n\nScope: ${d['Scope of Authority']}\n\nThis power is limited to the specific acts listed above and shall remain valid until revoked in writing.` },
-            'will': { fields: ['Testator Name', 'Beneficiary 1', 'Beneficiary 2', 'Assets'], text: (d) => `LAST WILL AND TESTAMENT\n\nI, ${d['Testator Name']}, being of sound mind, declare this to be my Last Will.\n\nBeneficiaries:\n1. ${d['Beneficiary 1']}\n2. ${d['Beneficiary 2']}\n\nAssets Covered: ${d['Assets']}\n\nI hereby revoke all prior wills and codicils.` },
+           'will': { fields: ['Testator Name', 'Total Estate Value', 'Beneficiary 1', 'Beneficiary 2', 'Assets'], text: (d) => `LAST WILL AND TESTAMENT\n\nI, ${d['Testator Name']}, being of sound mind, declare this to be my Last Will.\n\nTotal Estimated Estate Value: ${d['Total Estate Value']}\n\nBeneficiaries:\n1. ${d['Beneficiary 1']}\n2. ${d['Beneficiary 2']}\n\nAssets Covered: ${d['Assets']}\n\nI hereby revoke all prior wills and codicils.` },
             'partnership': { fields: ['Partner 1', 'Partner 2', 'Business Purpose'], text: (d) => `PARTNERSHIP AGREEMENT\n\nPARTNERS: ${d['Partner 1']} and ${d['Partner 2']}\n\nPurpose: ${d['Business Purpose']}\n\nPartners agree to share profits and losses equally.` },
+            
+            // --- NEW 20 TEMPLATES ---
+            'contractor': { fields: ['Client Name', 'Contractor Name', 'Services Provided', 'Compensation', 'End Date'], text: (d) => `INDEPENDENT CONTRACTOR AGREEMENT\n\nCLIENT: ${d['Client Name']}\nCONTRACTOR: ${d['Contractor Name']}\n\nServices: ${d['Services Provided']}\nCompensation: ${d['Compensation']}\nTerm End Date: ${d['End Date']}\n\nThe Contractor is an independent entity and not an employee. No tax withholdings shall be made by the Client.` },
+            'cease': { fields: ['Sender Name', 'Recipient Name', 'Infringing Activity', 'Deadline Date'], text: (d) => `CEASE AND DESIST NOTICE\n\nFROM: ${d['Sender Name']}\nTO: ${d['Recipient Name']}\n\nRe: ${d['Infringing Activity']}\n\nYou are hereby formally notified to immediately CEASE AND DESIST the activity described above. Failure to comply by ${d['Deadline Date']} will result in further legal action.` },
+            'loi': { fields: ['Buyer/Investor', 'Seller/Target', 'Proposed Transaction', 'Purchase Price'], text: (d) => `LETTER OF INTENT (LOI)\n\nBETWEEN: ${d['Buyer/Investor']} AND ${d['Seller/Target']}\n\nSubject: ${d['Proposed Transaction']}\nProposed Price: ${d['Purchase Price']}\n\nThis letter outlines the preliminary intent of the parties to enter into a formal agreement. This document is non-binding except for confidentiality provisions.` },
+            'sublease': { fields: ['Original Tenant', 'Subtenant', 'Property Address', 'Monthly Rent', 'Term'], text: (d) => `RESIDENTIAL SUBLEASE AGREEMENT\n\nSUBLESSOR: ${d['Original Tenant']}\nSUBLESSEE: ${d['Subtenant']}\n\nPremises: ${d['Property Address']}\nRent: ${d['Monthly Rent']}\nTerm: ${d['Term']}\n\nThe Sublessee agrees to abide by all terms of the original Master Lease.` },
+            'equipment': { fields: ['Lessor', 'Lessee', 'Equipment Description', 'Rental Rate', 'Return Date'], text: (d) => `EQUIPMENT LEASE AGREEMENT\n\nLESSOR: ${d['Lessor']}\nLESSEE: ${d['Lessee']}\n\nEquipment: ${d['Equipment Description']}\nRate: ${d['Rental Rate']}\nReturn Date: ${d['Return Date']}\n\nThe Lessee accepts the equipment in good condition and agrees to return it in the same condition, normal wear and tear excepted.` },
+            'consulting': { fields: ['Company', 'Consultant', 'Project Scope', 'Hourly/Fixed Rate'], text: (d) => `CONSULTING AGREEMENT\n\nCOMPANY: ${d['Company']}\nCONSULTANT: ${d['Consultant']}\n\nScope: ${d['Project Scope']}\nRate: ${d['Hourly/Fixed Rate']}\n\nThe Consultant agrees to provide professional advice and services as an independent contractor.` },
+            'waiver': { fields: ['Releasor', 'Releasee', 'Event/Activity', 'Date'], text: (d) => `RELEASE OF LIABILITY (WAIVER)\n\nI, ${d['Releasor']}, hereby release and forever discharge ${d['Releasee']} from any and all liability, claims, or demands arising from my participation in ${d['Event/Activity']} on ${d['Date']}.\n\nI voluntarily assume all risks associated with this activity.` },
+            'demand': { fields: ['Creditor', 'Debtor', 'Amount Due', 'Original Invoice Ref', 'Deadline'], text: (d) => `FORMAL DEMAND FOR PAYMENT\n\nFROM: ${d['Creditor']}\nTO: ${d['Debtor']}\n\nAmount Outstanding: ${d['Amount Due']}\nReference: ${d['Original Invoice Ref']}\n\nDemand is hereby made for payment of the above amount by ${d['Deadline']}. Failure to pay may result in legal proceedings.` },
+            'residence': { fields: ['Affiant Name', 'Address', 'City/State', 'Years at Address'], text: (d) => `AFFIDAVIT OF RESIDENCE\n\nI, ${d['Affiant Name']}, solemnly affirm that I currently reside at:\n${d['Address']}, ${d['City/State']}\n\nI have lived at this address for ${d['Years at Address']} years.\n\nI declare under penalty of perjury that the foregoing is true and correct.` },
+            'ip_assign': { fields: ['Assignor', 'Assignee', 'Description of IP', 'Consideration'], text: (d) => `INTELLECTUAL PROPERTY ASSIGNMENT\n\nASSIGNOR: ${d['Assignor']}\nASSIGNEE: ${d['Assignee']}\n\nIP Description: ${d['Description of IP']}\nPayment: ${d['Consideration']}\n\nThe Assignor hereby transfers and assigns all rights, title, and interest in the described Intellectual Property to the Assignee.` },
+            'joint_venture': { fields: ['Party A', 'Party B', 'Venture Name', 'Purpose'], text: (d) => `JOINT VENTURE AGREEMENT\n\nPARTICIPANTS: ${d['Party A']} and ${d['Party B']}\n\nVenture Name: ${d['Venture Name']}\nPurpose: ${d['Purpose']}\n\nThe parties agree to pool resources for the specific purpose stated above. This does not constitute a permanent partnership.` },
+            'loan_secured': { fields: ['Lender', 'Borrower', 'Loan Amount', 'Collateral Description', 'Interest Rate'], text: (d) => `SECURED LOAN AGREEMENT\n\nLENDER: ${d['Lender']}\nBORROWER: ${d['Borrower']}\n\nPrincipal: ${d['Loan Amount']}\nInterest: ${d['Interest Rate']}\nCollateral: ${d['Collateral Description']}\n\nThis loan is secured by the collateral described. In the event of default, the Lender may seize the collateral.` },
+            'tos': { fields: ['Website/App Name', 'Owner Company', 'Contact Email'], text: (d) => `TERMS OF SERVICE\n\nPlatform: ${d['Website/App Name']}\nOperator: ${d['Owner Company']}\n\nBy accessing this platform, users agree to be bound by these terms. All content is the property of the Operator.\n\nContact: ${d['Contact Email']}` },
+            'privacy': { fields: ['Website Name', 'Data Collected', 'Data Usage Purpose'], text: (d) => `PRIVACY POLICY\n\nSite: ${d['Website Name']}\n\nWe collect the following data: ${d['Data Collected']}\nPurpose of Use: ${d['Data Usage Purpose']}\n\nWe are committed to protecting user privacy and will not sell data to third parties without consent.` },
+            'offer_letter': { fields: ['Candidate Name', 'Company', 'Job Title', 'Annual Salary', 'Start Date'], text: (d) => `EMPLOYMENT OFFER LETTER\n\nDear ${d['Candidate Name']},\n\n${d['Company']} is pleased to offer you the position of ${d['Job Title']}.\n\nSalary: ${d['Annual Salary']} per year\nStart Date: ${d['Start Date']}\n\nThis offer is contingent upon successful background check and your acceptance.` },
+            'sales_agency': { fields: ['Principal', 'Agent', 'Territory', 'Commission Rate'], text: (d) => `SALES AGENCY AGREEMENT\n\nPRINCIPAL: ${d['Principal']}\nAGENT: ${d['Agent']}\n\nTerritory: ${d['Territory']}\nCommission: ${d['Commission Rate']}\n\nThe Agent is authorized to solicit orders for the Principal's products within the Territory.` },
+            'event_rental': { fields: ['Venue Owner', 'Renter', 'Event Date', 'Event Type', 'Total Fee'], text: (d) => `EVENT SPACE RENTAL AGREEMENT\n\nOWNER: ${d['Venue Owner']}\nRENTER: ${d['Renter']}\n\nDate: ${d['Event Date']}\nEvent: ${d['Event Type']}\nFee: ${d['Total Fee']}\n\nThe Renter agrees to vacate the premises by the agreed time and leave the space in clean condition.` },
+            'photo_service': { fields: ['Photographer', 'Client', 'Event/Shoot Type', 'Deliverables', 'Fee'], text: (d) => `PHOTOGRAPHY SERVICES CONTRACT\n\nPHOTOGRAPHER: ${d['Photographer']}\nCLIENT: ${d['Client']}\n\nShoot: ${d['Event/Shoot Type']}\nDeliverables: ${d['Deliverables']}\nFee: ${d['Fee']}\n\nThe Photographer retains copyright but grants the Client a license for personal/commercial use as agreed.` },
+            'eula': { fields: ['Software Name', 'Licensor', 'Licensee', 'License Type'], text: (d) => `END USER LICENSE AGREEMENT (EULA)\n\nSoftware: ${d['Software Name']}\nLicensor: ${d['Licensor']}\n\nThis license grants the Licensee a ${d['License Type']} right to use the software. Reverse engineering and redistribution are strictly prohibited.` },
+            'debt_settlement': { fields: ['Creditor', 'Debtor', 'Total Debt', 'Settlement Amount', 'Payment Date'], text: (d) => `DEBT SETTLEMENT AGREEMENT\n\nCREDITOR: ${d['Creditor']}\nDEBTOR: ${d['Debtor']}\n\nTotal Debt: ${d['Total Debt']}\nSettlement Amount: ${d['Settlement Amount']}\n\nThe Creditor agrees to accept the Settlement Amount as full and final satisfaction of the Total Debt if paid by ${d['Payment Date']}.` },
+
             'custom': { fields: [], text: (d) => `` }
         };
-
-        const PricingEngine = {
-            calculate: (contractValue, partyCount, mode, hasStudentId) => {
+const PricingEngine = {
+            calculate: (contractValue, partyCount, mode, docType) => {
                 let baseFee = 0;
+                let isFinancial = false;
 
-                // Step 2: Calculate Base Fee
-                if (contractValue <= 0) {
-                    baseFee = 19; // Non-Financial
-                } else {
-                    // Financial Docs (Based on Total Contract Value)
-                    if (contractValue <= 1000) {
-                        baseFee = 20;
-                    } else if (contractValue <= 10000) {
-                        const increments = Math.ceil((contractValue - 1000) / 1000);
-                        baseFee = 20 + (increments * 2);
-                    } else if (contractValue <= 100000) {
-                        const baseAt10k = 38;
-                        const increments = Math.ceil((contractValue - 10000) / 5000);
-                        baseFee = baseAt10k + (increments * 5);
-                    } else if (contractValue <= 500000) {
-                        baseFee = contractValue * 0.0015; // 0.15%
+                // --- 1. فرمول اختصاصی وصیت‌نامه (Last Will) ---
+                if (docType === 'will') {
+                    isFinancial = true; // وصیت‌نامه همیشه فرمول خاص دارد
+                    if (contractValue <= 500000) {
+                        baseFee = 49;
                     } else if (contractValue <= 1000000) {
-                        baseFee = contractValue * 0.0012; // 0.12%
+                        baseFee = 89;
+                    } else if (contractValue <= 5000000) {
+                        baseFee = 119;
                     } else if (contractValue <= 10000000) {
-                        baseFee = contractValue * 0.0010; // 0.10%
+                        baseFee = 159;
                     } else {
-                        baseFee = contractValue * 0.0008; // 0.08%
+                        // بالای ۱۰ میلیون دلار: ۰.۰۲ درصد
+                        baseFee = contractValue * 0.0002;
+                    }
+                } 
+                // --- 2. سایر اسناد ---
+                else {
+                    if (contractValue <= 0) {
+                        // اسناد غیرمالی (پایه جدید)
+                        baseFee = 24;
+                        isFinancial = false;
+                    } else {
+                        // اسناد مالی (پایه جدید)
+                        isFinancial = true;
+                        if (contractValue <= 1000) {
+                            baseFee = 25; // کف قیمت مالی
+                        } else if (contractValue <= 10000) {
+                            // فرمول: پایه ۲۵ + ۲ دلار برای هر ۱۰۰۰ تا
+                            const increments = Math.ceil((contractValue - 1000) / 1000);
+                            baseFee = 25 + (increments * 2);
+                        } else if (contractValue <= 100000) {
+                            // فرمول: پایه ۴۳ + ۵ دلار برای هر ۵۰۰۰ تا
+                            const baseAt10k = 43; 
+                            const increments = Math.ceil((contractValue - 10000) / 5000);
+                            baseFee = baseAt10k + (increments * 5);
+                        } else if (contractValue <= 500000) {
+                            baseFee = contractValue * 0.0015; // 0.15%
+                        } else if (contractValue <= 1000000) {
+                            baseFee = contractValue * 0.0012; // 0.12%
+                        } else if (contractValue <= 10000000) {
+                            baseFee = contractValue * 0.0010; // 0.10%
+                        } else {
+                            baseFee = contractValue * 0.0008; // 0.08%
+                        }
                     }
                 }
 
-                // Step 3: Add Extra Signatories Fee (First 3 Free)
+                // --- 3. هزینه نفرات اضافه ---
                 const extraPeopleFee = Math.max(0, partyCount - 3) * 2;
                 let totalFee = baseFee + extraPeopleFee;
 
-                // Step 4: Apply "Express Mode" Logic (High Value Only)
+                // --- 4. تخفیف اکسپرس (فقط برای مبالغ بالا) ---
                 if (mode === 'text' && totalFee > 100) {
-                    totalFee = totalFee * 0.85; // 15% Discount
+                    totalFee = totalFee * 0.85; 
                 }
 
-                // Step 5: Student Discount Logic (Moved to manual application in UI, but kept here for calculation consistency)
-                
                 return {
                     total: Math.max(0, totalFee).toFixed(2),
                     base: baseFee.toFixed(2),
                     extra: extraPeopleFee.toFixed(2),
-                    isFinancial: contractValue > 0
+                    isFinancial: isFinancial
                 };
             }
         };
-
         // --- FIREBASE HELPER FUNCTIONS ---
         function blobToBase64(blob) {
             return new Promise((resolve, _) => {
@@ -813,18 +879,30 @@ Each counterparty must enter this key on the main screen in order to access the 
             }
         };
 
-        window.loadTemplateInputs = function() {
+      window.loadTemplateInputs = function() {
             const key = document.getElementById('template-select').value;
             const container = document.getElementById('smart-inputs');
             const textArea = document.getElementById('create-text');
             container.innerHTML = '<h4 class="text-xs text-white font-bold border-b border-gray-700 pb-2 mb-3">Fill Details</h4>';
-            if (!key || key === 'custom') { container.classList.add('hidden'); textArea.value = ''; textArea.readOnly = false; return; }
-            container.classList.remove('hidden'); textArea.readOnly = true; 
+            
+            // اگر گزینه کاستوم یا خالی بود
+            if (!key || key === 'custom') { 
+                container.classList.add('hidden'); 
+                if(!key) textArea.value = ''; // اگر هیچ چیز انتخاب نشده بود متن پاک شود
+                textArea.readOnly = false; 
+                return; 
+            }
+            
+            // اگر تمپلت انتخاب شده بود
+            container.classList.remove('hidden'); 
+            textArea.readOnly = false; // *** تغییر مهم: اجازه ویرایش دستی داده شد ***
+            
             TEMPLATES[key].fields.forEach(field => {
                 const div = document.createElement('div'); div.className = 'template-form-group';
                 div.innerHTML = `<label class="template-label">${field}</label><input type="text" class="w-full input-field p-2 text-xs rounded" oninput="updateTemplateText('${key}')" data-field="${field}">`;
                 container.appendChild(div);
             });
+
             updateTemplateText(key);
         };
 
@@ -882,7 +960,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             const pinVal = document.getElementById('auth-pin').value.trim();
             const btn = document.getElementById('btn-auth');
             
-            // Added check for PIN
             if (c1 && c2 && c3 && nameVal && nidVal && pinVal) { 
                 btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale'); 
             } else { 
@@ -905,7 +982,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             const allDocs = await loadAll(); const doc = allDocs.find(d => d.docNumber===target || d.id===target);
             if(!doc) return alert("No record found.");
             
-            // Explicit check to ensure we show Signed status correctly in Authority Panel
             activeJudgeDoc = doc; 
             document.getElementById('modal-judiciary-auth').classList.add('hidden'); document.getElementById('modal-judiciary-view').classList.remove('hidden');
             document.getElementById('judge-doc-number').innerText = doc.docNumber; document.getElementById('judge-doc-hash').innerText = doc.hash || "PENDING"; document.getElementById('judge-time').innerText = doc.created;
@@ -962,7 +1038,7 @@ Each counterparty must enter this key on the main screen in order to access the 
         
         function resetAuthForm() { 
             document.getElementById('auth-name').value = ''; document.getElementById('auth-nid').value = ''; 
-            document.getElementById('auth-pin').value = ''; // Reset PIN
+            document.getElementById('auth-pin').value = ''; 
             document.getElementById('chk-1').checked = false; document.getElementById('chk-2').checked = false; document.getElementById('chk-3').checked = false; 
             setAuthMode('video');
             const btn = document.getElementById('btn-auth'); btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale'); 
@@ -992,7 +1068,7 @@ Each counterparty must enter this key on the main screen in order to access the 
                 document.getElementById('mode-desc').innerHTML = `<span class="text-[#d4af37]"><i class="fas fa-lock"></i> MANDATORY:</span> Contract requires <strong>${typeLabel}</strong>.`;
                 
                 document.getElementById('auth-name').value = ''; document.getElementById('auth-nid').value = '';
-                document.getElementById('auth-pin').value = ''; // Reset PIN
+                document.getElementById('auth-pin').value = ''; 
                 document.getElementById('chk-1').checked = false; document.getElementById('chk-2').checked = false; document.getElementById('chk-3').checked = false; 
                 
                 document.getElementById('sec-hub').classList.add('hidden'); 
@@ -1006,7 +1082,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             if(!user.name || !user.nid) { const loginModal = document.getElementById('modal-repo-login'); loginModal.classList.remove('hidden'); loginModal.classList.add('flex'); } else { document.getElementById('modal-dashboard').classList.remove('hidden'); renderRepo(); }
         };
         
-        // --- NEW LOGIN LOGIC WITH PIN ---
         window.performLogin = async function() {
             const name = document.getElementById('login-name').value.trim();
             const nid = document.getElementById('login-nid').value.trim();
@@ -1015,7 +1090,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             if(!name || !nid || !pin) return alert("Please fill in all fields.");
 
             try {
-                // Verify against secure user storage path
                 const snapshot = await db.ref('users/' + nid).get();
                 
                 if (!snapshot.exists()) {
@@ -1024,11 +1098,10 @@ Each counterparty must enter this key on the main screen in order to access the 
 
                 const userData = snapshot.val();
                 
-                // Verify Name (Loose match) and PIN (Strict match)
                 if (userData.pin === pin) {
                     user.name = userData.name; 
                     user.nid = nid;
-                    user.pin = pin; // Store locally for session usage if needed
+                    user.pin = pin; 
 
                     document.getElementById('modal-repo-login').classList.add('hidden'); 
                     document.getElementById('modal-repo-login').classList.remove('flex');
@@ -1143,7 +1216,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             const pin = document.getElementById('auth-pin').value;
             
             if(!n || !i || !pin) return alert("All fields are required, including PIN.");
-            // PIN VALIDATION
             if (!/^\d{6}$/.test(pin)) return alert("Security PIN must be exactly 6 digits.");
 
             const btn = document.getElementById('btn-auth'); btn.innerText = "Scanning..."; document.getElementById('bio-scan-line').style.display = 'block';
@@ -1151,7 +1223,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             setTimeout(async () => {
                 user.name=n; user.nid=i; user.pin=pin;
                 
-                // SAVE USER & PIN TO PRIVATE PATH
                 try {
                     await db.ref('users/' + user.nid).set({ name: user.name, pin: user.pin });
                 } catch(e) { console.error("User Save Error", e); }
@@ -1198,51 +1269,104 @@ Each counterparty must enter this key on the main screen in order to access the 
             calculateAndShowPayment();
         };
 
+// --- تابع کمکی جدید برای استخراج عدد از متن ---
+        function parseMoney(inputStr) {
+            if (!inputStr) return 0;
+            // تبدیل اعداد فارسی به انگلیسی و حذف حروف اضافه
+            const persianDigits = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
+            for (let i = 0; i < 10; i++) { inputStr = inputStr.replace(persianDigits[i], i); }
+            let cleanStr = inputStr.replace(/[^0-9.]/g, '');
+            let val = parseFloat(cleanStr);
+            return isNaN(val) ? 0 : val;
+        }
+
         window.calculateAndShowPayment = function() {
-            // STEP 1: Determine Total Contract Value
             let totalValue = 0;
+            
+            // گرفتن تمام ورودی‌های پر شده
             const inputs = Array.from(document.querySelectorAll('#smart-inputs input'));
+            
+            // گرفتن تنظیمات مهم: تک‌نفره/چندنفره و نوع سند
+            const contractMode = document.getElementById('contract-mode').value; 
+            const docType = document.getElementById('template-select').value; 
 
-            const getValue = (str) => {
-                 const match = inputs.find(i => i.dataset.field && i.dataset.field.toLowerCase() === str.toLowerCase());
-                 if(!match) return 0;
-                 return parseFloat(match.value.replace(/,/g, '')) || 0;
-            };
+            // --- شروع منطق تشخیص ارزش ---
 
-            const monthlyRent = getValue('Monthly Rent');
-            if (monthlyRent > 0) {
-                let duration = getValue('Duration');
-                if (duration === 0) duration = getValue('Lease Term');
-                if (duration === 0) duration = 12;
-                totalValue = monthlyRent * duration;
-            } else {
-                const keywords = ['Amount', 'Price', 'Fee', 'Loan', 'Cost', 'Value', 'Sale Price'];
-                for (let k of keywords) {
-                    const val = getValue(k);
-                    if (val > 0) { totalValue = val; break; }
+            // ۱. اگر وصیت‌نامه است (Will)
+            if (docType === 'will') {
+                // دنبال فیلد مخصوص ارزش دارایی بگرد
+                const estateVal = inputs.find(i => i.dataset.field === 'Total Estate Value');
+                if (estateVal) totalValue = parseMoney(estateVal.value);
+            }
+            // ۲. اگر سند تک‌نفره است (و وصیت‌نامه نیست)
+            else if (contractMode === 'single') {
+                // طبق دستور شما: اسناد تک‌نفره همیشه غیرمالی هستند
+                totalValue = 0; 
+            }
+            // ۳. اگر سند چندنفره است (Multi-Party)
+            else {
+                // تابع جستجوگر هوشمند
+                const getValueByField = (keywords) => {
+                     const match = inputs.find(i => {
+                         const fieldName = (i.dataset.field || '').toLowerCase();
+                         return keywords.some(k => fieldName.includes(k.toLowerCase()));
+                     });
+                     if(!match) return 0;
+                     return parseMoney(match.value);
+                };
+
+                // الف) اولویت با اجاره‌نامه (چون فرمول ضرب دارد)
+                const monthlyRent = getValueByField(['Monthly Rent', 'Rent Amount']);
+                if (monthlyRent > 0) {
+                    let duration = getValueByField(['Duration', 'Lease Term', 'Length']);
+                    if (duration === 0) duration = 12; // پیش‌فرض ۱۲ ماه
+                    totalValue = monthlyRent * duration;
+                } 
+                // ب) سایر اسناد مالی (جستجوی کلمات کلیدی)
+                else {
+                    const moneyKeywords = [
+                        'Amount', 'Price', 'Fee', 'Loan', 'Cost', 'Value', 
+                        'Sale Price', 'Purchase Price', 'Compensation', 'Salary', 
+                        'Settlement', 'Total', 'Investment', 'Capital', 'Consideration',
+                        'Debt', 'Payment'
+                    ];
+                    
+                    let maxVal = 0;
+                    inputs.forEach(input => {
+                        const fieldName = (input.dataset.field || '').toLowerCase();
+                        // اگر اسم فیلد جزو کلمات پولی بود
+                        if (moneyKeywords.some(k => fieldName.includes(k.toLowerCase()))) {
+                            const val = parseMoney(input.value);
+                            if (val > maxVal) maxVal = val;
+                        }
+                    });
+                    totalValue = maxVal;
                 }
             }
 
-            // Calculation (Pass false for studentId, as we do it manually in modal now)
+            // --- ارسال به موتور قیمت‌گذاری ---
             const partyCount = pendingContractData.parties.length;
-            const result = PricingEngine.calculate(totalValue, partyCount, selectedAuthMode, false);
+            
+            // نکته مهم: docType را هم می‌فرستیم تا موتور بداند وصیت‌نامه است یا نه
+            const result = PricingEngine.calculate(totalValue, partyCount, selectedAuthMode, docType);
 
-            // STORE RAW TOTAL FOR DISCOUNT LOGIC
+            // ذخیره قیمت خام برای تخفیف دانشجویی
             currentPaymentRaw = parseFloat(result.total);
 
-            // Update DOM with results
+            // --- نمایش در فاکتور ---
             document.getElementById('pay-total').innerText = `$${result.total}`;
             document.getElementById('pay-base').innerText = `$${result.base}`;
             document.getElementById('pay-extra').innerText = `$${result.extra}`;
             document.getElementById('pay-tier').innerText = result.isFinancial ? "FINANCIAL" : "NON-FINANCIAL";
             document.getElementById('inv-num').innerText = Math.floor(Math.random() * 900000);
 
-            // Reset Discount UI
+            // ریست کردن بخش تخفیف
             document.getElementById('discount-display-container').classList.add('hidden');
             document.getElementById('pay-original').innerText = '';
             document.getElementById('pay-discount').innerText = '';
             document.getElementById('pay-student-id').value = '';
 
+            // باز کردن مودال پرداخت
             document.getElementById('modal-payment').classList.remove('hidden');
             document.getElementById('modal-payment').classList.add('flex');
         };
@@ -1251,11 +1375,9 @@ Each counterparty must enter this key on the main screen in order to access the 
             const idVal = document.getElementById('pay-student-id').value.trim();
             if(!idVal) return alert("Please enter a valid Student ID.");
             
-            // Calculate 30% discount
             const discountAmount = currentPaymentRaw * 0.30;
             const newTotal = currentPaymentRaw - discountAmount;
 
-            // Update UI
             document.getElementById('discount-display-container').classList.remove('hidden');
             document.getElementById('pay-original').innerText = `$${currentPaymentRaw.toFixed(2)}`;
             document.getElementById('pay-discount').innerText = `-$${discountAmount.toFixed(2)}`;
@@ -1275,7 +1397,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             }, 2000);
         };
 
-        // --- NEW MENU LOGIC ---
         window.toggleMenu = function() {
             const menu = document.getElementById('side-menu');
             if (menu.classList.contains('translate-x-full')) {
@@ -1286,8 +1407,7 @@ Each counterparty must enter this key on the main screen in order to access the 
         };
 
         window.openInfoModal = function(type) {
-            toggleMenu(); // Close sidebar
-            // Close any open modals first
+            toggleMenu(); 
             document.querySelectorAll('.info-modal').forEach(m => m.classList.add('hidden'));
             document.querySelectorAll('.info-modal').forEach(m => m.classList.remove('flex'));
             
@@ -1329,8 +1449,6 @@ Each counterparty must enter this key on the main screen in order to access the 
                 closeInfoModal('contact');
             }
         };
-
-        // --- EXISTING RENDER & SIGNING LOGIC ---
 
         window.renderSigningRoom = function() {
             if(!contract) return;
@@ -1456,7 +1574,6 @@ Each counterparty must enter this key on the main screen in order to access the 
             try {
                 btn.disabled = true; btn.innerText = "SYNCING & SEALING...";
                 
-                // 1. Fetch Latest Data First
                 const snapshot = await db.ref('contracts/' + contract.id).get();
                 if (!snapshot.exists()) throw new Error("Document vanished from cloud.");
                 let freshContract = snapshot.val();
@@ -1465,7 +1582,6 @@ Each counterparty must enter this key on the main screen in order to access the 
                 const method = requiresVideo ? "Biometric Video" : "Standard Digital Signature";
                 document.getElementById('process-status').classList.remove('hidden'); document.getElementById('meta-disp').innerText = `IP: ${getMockIP()} | Auth: ${method}`;
                 
-                // 2. Modify Fresh Data
                 const idx = freshContract.parties.findIndex(p => p.nid === user.nid);
                 if(idx!==-1) {
                     freshContract.parties[idx].signed = true; 
@@ -1478,17 +1594,14 @@ Each counterparty must enter this key on the main screen in order to access the 
                     await saveVideoToDB(`${freshContract.id}-${user.nid}`, videoBlobCaptured);
                 }
                 
-                // 3. Check All Signed on Fresh Data
                 const allSigned = freshContract.parties.every(p => p.signed);
                 if(allSigned) { 
                     freshContract.status = 'EXECUTED'; 
                     freshContract.hash = await computeHash(JSON.stringify(freshContract)); 
                 }
                 
-                // 4. Save Final State
                 await db.ref('contracts/' + freshContract.id).set(freshContract);
                 
-                // 5. Update Local State
                 contract = freshContract;
                 
                 showToast("Signed & Synced Successfully", "success");
