@@ -143,30 +143,82 @@
             <button onclick="toggleMenu()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
         </div>
         <nav class="flex flex-col gap-4">
-            <button onclick="openInfoModal('legal')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-scale-balanced w-6"></i> About & Legal</button>
+            <!-- NEW: About Us Button -->
+            <button onclick="openInfoModal('about')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-users w-6"></i> About Us</button>
+            
+            <button onclick="openInfoModal('legal')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-scale-balanced w-6"></i> Terms & Legal</button>
             <button onclick="openInfoModal('pricing')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-tags w-6"></i> Pricing Formula</button>
             <button onclick="openInfoModal('faq')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-question-circle w-6"></i> FAQ</button>
             <button onclick="openInfoModal('contact')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-envelope w-6"></i> Contact Support</button>
             <button onclick="openInfoModal('video')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-play-circle w-6"></i> Video Guide</button>
+            <!-- NEW: User Guide Button -->
+            <button onclick="openInfoModal('guide')" class="text-left text-gray-300 hover:text-[#d4af37] text-sm uppercase font-bold tracking-wider py-2 border-b border-white/5"><i class="fas fa-book-open w-6"></i> User Guide</button>
         </nav>
         <div class="mt-auto text-[9px] text-gray-600 text-center">
             Essproof Systems v2.1<br>Secure. Private. Boundless.
         </div>
     </div>
 
+    <!-- NEW: About Us Modal -->
+    <div id="modal-about" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeInfoModal('about')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl text-[#d4af37] brand-font mb-6 border-b border-white/10 pb-2">Architectural Pedigree & Vision</h3>
+            <div class="text-xs text-gray-300 space-y-4 leading-relaxed font-serif text-justify">
+                <p>
+                    <strong class="text-white block mb-1 text-sm">The Essence of Registry</strong>
+                    Essproof is not merely a technological platform; it is the crystallization of nearly three decades of high-level legal and forensic expertise. Our mission is to bridge the gap between traditional legal intent and modern digital immutability.
+                </p>
+                <p>
+                    <strong class="text-white block mb-1 text-sm">Expertise & Heritage</strong>
+                    The architectural foundation of Essproof is supported by a synergetic collaboration of international experts. Our core design is led by a team with over <strong>28 years of senior legal experience</strong>, ensuring that every digital process mirrors the rigor of physical legal standards.
+                </p>
+                <p>
+                    <strong class="text-white block mb-1 text-sm">Multidisciplinary Advisory Board</strong>
+                    Our infrastructure is fortified by senior advisors in:
+                    <ul class="list-disc pl-5 mt-2 space-y-1 text-gray-400">
+                        <li><strong>Strategic Management:</strong> Ensuring robust operational continuity.</li>
+                        <li><strong>Computer Science & AI:</strong> Implementing state-of-the-art encryption and biometric analysis.</li>
+                        <li><strong>EU Regulatory Law:</strong> Aligning with global data privacy standards.</li>
+                        <li><strong>International Law (Solicitor, Australia):</strong> Providing a global perspective on document validity.</li>
+                    </ul>
+                </p>
+                <p class="italic text-gray-500 border-l-2 border-[#d4af37] pl-3 mt-4">
+                    "We do not replace the law; we provide the ultimate evidentiary vessel for it."
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPDATED: Legal Modal (Stronger Terms) -->
     <div id="modal-legal" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
         <div class="w-full max-w-2xl bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeInfoModal('legal')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
             <h3 class="text-xl text-[#d4af37] brand-font mb-6 border-b border-white/10 pb-2">Terms of Service & Legal Disclaimer</h3>
             <div class="text-xs text-gray-300 space-y-4 leading-relaxed font-serif text-justify">
-                <p><strong class="text-white block mb-1">1. Architectural Pedigree & Expertise</strong> The Essproof platform is the result of synergetic collaboration among international experts. Our architectural foundation is supported by a team with over 28 years of high-level legal experience, alongside senior advisors in Management, Computer Science, AI, EU Regulatory Law, and a Solicitor (Australia). <em>Note: The disclosure of this professional background is intended solely to demonstrate the rigorous intellectual and technical standards behind the platform's design. It is NOT an advertisement of legal services, nor does it establish a client-attorney relationship.</em></p>
-                <p><strong class="text-white block mb-1">2. Platform Nature (Non-Institutional)</strong> Essproof operates exclusively as a Private, Independent, and Technical Facilitator. We explicitly declare that we are NOT a law firm, notary public, court of law, arbitration center, or government entity. We provide a secure, transparent tool for parties to generate "Self-Willed Instruments" based on their own mutual consent and intent.</p>
-                <p><strong class="text-white block mb-1">3. The "Blind Facilitator" Policy & User Responsibility</strong> We operate as a "Blind Technical Facilitator." This means we do not verify the real-world identities, social relationships, financial solvency, or underlying intent of the users. The Initiator is solely responsible for entering correct names/IDs. Essproof bears no liability for fraud, mistaken identity, or disputes arising from private interactions.</p>
-                <p><strong class="text-white block mb-1">4. Limitation of Liability & Refunds</strong> Essproof assumes responsibility solely for proven technical failures directly attributable to the Platform's infrastructure. In such specific events, our liability is strictly limited to the refund of the service fee paid. The Platform bears no further liability for consequential damages.</p>
+                
+                <div class="bg-red-900/20 border border-red-500/30 p-3 rounded mb-4">
+                    <strong class="text-red-400 block mb-1">CRITICAL NOTICE: NON-INSTITUTIONAL NATURE</strong>
+                    Essproof operates exclusively as a <strong>Private, Independent, and Technical Facilitator</strong>. We explicitly declare that we are NOT a law firm, notary public, court of law, arbitration center, or government entity. We provide a secure, transparent tool for parties to generate "Self-Willed Instruments" based on their own mutual consent.
+                </div>
+
+                <p><strong class="text-white block mb-1">1. The "Blind Facilitator" Policy</strong> 
+                We operate as a "Blind Technical Facilitator." This means we do not verify the real-world identities, social relationships, financial solvency, or underlying intent of the users beyond the digital metrics provided. The Initiator is solely responsible for entering correct names/IDs. Essproof bears no liability for fraud, mistaken identity, or disputes arising from private interactions.</p>
+
+                <p><strong class="text-white block mb-1">2. Forensic Data Collection & Consent</strong> 
+                By using this platform, you explicitly consent to the collection and permanent embedding of forensic metadata, including but not limited to: <strong>Real-time IP Address, Precise GPS Geolocation, and Biometric Video/Audio</strong>. This data is collected solely for the purpose of "Non-Repudiation" (preventing denial of signature) and establishing a chain of custody. You waive any right to claim privacy violation regarding this specific evidentiary data in legal proceedings.</p>
+
+                <p><strong class="text-white block mb-1">3. User Warranties & Prohibited Use</strong> 
+                You warrant that you are of legal age and sound mind. You strictly agree NOT to use Essproof for: (a) Illegal transactions, (b) Money laundering, (c) Coerced agreements, or (d) Documents violating public order. Any document found to be generated for illicit purposes renders the platform's protection void ab initio.</p>
+
+                <p><strong class="text-white block mb-1">4. Limitation of Liability</strong> 
+                Essproof assumes responsibility solely for proven technical failures directly attributable to the Platform's infrastructure (e.g., server crash). In such specific events, our liability is strictly limited to the <strong>refund of the service fee paid</strong>. The Platform bears no further liability for consequential damages, lost profits, or legal outcomes of the instruments generated.</p>
+
+                <p><strong class="text-white block mb-1">5. No Attorney-Client Relationship</strong> 
+                The disclosure of our team's professional background (Legal, AI, Management) is intended solely to demonstrate the rigorous technical standards of the platform. It is NOT an advertisement of legal services, nor does it establish a client-attorney relationship. Consult a local attorney for legal advice.</p>
             </div>
         </div>
     </div>
-
     <div id="modal-pricing" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
         <div class="w-full max-w-lg bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative">
             <button onclick="closeInfoModal('pricing')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
@@ -247,6 +299,77 @@
         </div>
     </div>
 
+    <!-- NEW: User Guide Modal (Translated) -->
+    <div id="modal-guide" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
+        <div class="w-full max-w-3xl bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeInfoModal('guide')" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl text-[#d4af37] brand-font mb-6 border-b border-white/10 pb-2">User Guide</h3>
+            <div class="text-xs text-gray-300 space-y-4 leading-relaxed font-serif text-justify">
+                <p>
+                    <strong class="text-white block mb-1 text-sm">Privacy & Consent</strong>
+                    With a strong emphasis on privacy preservation, respect for confidentiality of identity, and the security of instruments drafted and registered on this platform, we require explicit and transparent permission to collect user data solely for the purpose of issuing the intended instrument. This ensures adherence to indicators of validity, authenticity, and proof of the users' real will, consent, and intent.
+                </p>
+                <ol class="list-decimal pl-5 space-y-2">
+                    <li>On the homepage, click on either the Left or Right panel to enter the Gateway.</li>
+                    <li>In the Gateway, no email or mobile number is required. You can enter using only your Name, Surname, and National ID. Please note: Enter a 6-digit numeric code of your choice in the designated field and keep it safe for future access to your document records.</li>
+                    <li>After entering your Name, National ID, and 6-digit code, you must select the document type: <strong>Express Document</strong> (Registration and issuance without video) or <strong>Premium Document</strong> (Registration and issuance with video recording).</li>
+                    <li>After selecting the document type, ensure you read the three explained points. If you agree, check the boxes to proceed. If the boxes are not checked, the platform assumes you have changed your mind and does not have permission to receive or record your data; the confirmation button will not activate, and you must exit the platform.</li>
+                </ol>
+
+                <div class="bg-black/30 p-3 rounded border border-white/10 mt-4">
+                    <strong class="text-[#d4af37] block mb-2">Supplementary Explanation:</strong>
+                    <p class="mb-2"><strong>Express Version (Non-Video):</strong> Fast and professional. Suitable for everyday commercial documents. In this mode, the "Digital Signature" and "Document Text" are registered. Your Date, Time, IP Address, and GPS Location are also captured and noted in the document. No camera required.</p>
+                    <p><strong>Premium Version ( Legal Evidentiary Standard):</strong> In this mode, in addition to the signature, a "Video Certificate" of your face and voice is recorded, in which you declare your intent, will, and consent with full sobriety. Timestamp, IP Address, and GPS Location are also captured and noted.</p>
+                </div>
+
+                <p class="mt-4">
+                    <strong>Note:</strong> If the browser requests permission to access your Camera, IP, or GPS and you deny it, the process cannot continue, and no document will be issued. You must exit or restart the process, granting the necessary permissions. If you pay the fee but refuse to grant permission for data collection (resulting in non-registration), the fee is non-refundable. A new attempt will require a new payment.
+                </p>
+
+                <h4 class="text-white font-bold mt-6 mb-2">2. Single Party Document Guide (e.g., Will, Affidavit, Commitment)</h4>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Entry:</strong> Select Express or Premium. Enter Name, National ID, and a "6-Digit PIN".</li>
+                    <li><strong>Setup:</strong> In the "Setup" section, select <strong>Single Party</strong>.</li>
+                    <li><strong>Drafting:</strong> Choose a template (e.g., Last Will) and fill in the fields. You can edit the text in the right-hand box.</li>
+                    <li><strong>Signing:</strong> Click "Initiate & Sign", pay the fee, and seal the document with a digital fingerprint or video.</li>
+                    <li><strong>Result:</strong> Your document is immediately encrypted and stored in the "Repository". It is accessible for PDF generation or printing.</li>
+                </ul>
+                <p class="mt-2 italic text-gray-400">
+                    Note: After confirming the draft and clicking the button, you are directed to payment. A "Back" button exists there for re-editing. However, <strong>after payment, editing is impossible</strong>, and the document locks. Please be careful during drafting.
+                </p>
+                <p class="mt-2">
+                    In the signing screen, use the touch screen (mobile/tablet) or mouse (PC) to sign in the designated box. Then press the final confirmation button to seal the document. To view the original or get a PDF, go to the Repository.
+                </p>
+
+                <h4 class="text-white font-bold mt-6 mb-2">3. Multi-Party Contract Guide (e.g., Lease, Sale, Partnership)</h4>
+                <p class="mb-2"><strong class="text-red-400">Vital Note:</strong> Parties can enter the "Secure Virtual Room" simultaneously or at different times to sign the joint document one after another.</p>
+                
+                <strong class="text-[#d4af37] block mt-2">Initiator's Duty:</strong>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>In "Setup", select <strong>Multi-Party</strong>.</li>
+                    <li>Add the Names and IDs of other parties in the "Signatories" list.</li>
+                    <li><strong>Warning:</strong> The platform is sensitive to the Name and ID entered by the Initiator. If entered incorrectly, the system will not accept other users. You must restart and repay if mistakes are made. This is a non-negotiable security measure.</li>
+                    <li>Select the document template or fill the page. You can add/delete text as needed. Click confirm to proceed to payment.</li>
+                    <li><strong>Important:</strong> Review carefully. After payment, the document is <strong>LOCKED</strong>. No edits are possible. The exact text will be shown to other parties for signing only.</li>
+                </ul>
+
+                <strong class="text-[#d4af37] block mt-4">Room Key (Critical):</strong>
+                <p>After payment, the system gives you a <strong>15-Digit Room Key</strong>. Copy this code (bottom left) and send it to the other party via a secure messenger (WhatsApp/Telegram/Email).</p>
+
+                <strong class="text-[#d4af37] block mt-4">Counterparty's Duty:</strong>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Go to the main site (do not click Express/Premium panels).</li>
+                    <li>At the bottom, find the <strong>"Enter 15-Digit Room Key"</strong> box.</li>
+                    <li>Enter the code provided by the Initiator and click the arrow.</li>
+                    <li>The system will verify your entry, ask for the 3 permissions, and direct you to the specific contract to read and sign.</li>
+                </ul>
+
+                <p class="mt-4">
+                    <strong>Repository Access:</strong> To view signed documents or download them, click the <strong>Repository</strong> (Folder Icon) at the top. Enter your Name, National ID, and the 6-Digit PIN you created. You can print or backup your files there.
+                </p>
+            </div>
+        </div>
+    </div>
     <main class="w-full flex-grow flex flex-col relative">
 
         <div id="modal-payment" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-4">
@@ -719,9 +842,8 @@ Each counterparty must enter this key on the main screen in order to access the 
             </p>
             <p class="text-[10px] text-gray-700 mt-2">© 2025 Essproof Systems. All Rights Reserved.</p>
         </div>
-    </footer>
-      
-       <script>
+         </footer>
+         <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAlfX416VJz5rx4rcbQE15FOUAEAf0eFCw",
             authDomain: "essproof-866ef.firebaseapp.com",
