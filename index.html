@@ -50,18 +50,16 @@
         .status-gray { color: #475569; background: #1e293b; border: 1px solid #334155; } .status-gold { color: #fefce8; background: var(--gold); border: 1px solid #fefce8; box-shadow: 0 0 8px rgba(212,175,55,0.4); cursor: pointer; } .status-gold:hover { transform: scale(1.1); }
         .selected-row { background: rgba(212, 175, 55, 0.15) !important; border-left: 4px solid var(--gold); }
         
-        /* FIXED: Paper View Text Wrapping */
         .paper-view { font-family: 'Times New Roman', serif; color: black; background: #fff; padding: 40px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); min-height: 800px; box-sizing: border-box; max-width: 100%; }
         .paper-watermark { position: absolute; top: 40%; left: 30%; transform: rotate(-45deg); font-size: 80px; color: rgba(0,0,0,0.05); font-family: 'Cinzel', serif; z-index: 0; pointer-events: none; }
         .paper-header { text-align: center; border-bottom: 2px solid #d4af37; padding-bottom: 20px; margin-bottom: 30px; position: relative; z-index: 1; }
         .paper-header h1 { font-family: 'Cinzel', serif; font-size: 16px; margin: 0; color: black; }
         .paper-title { font-size: 18px; text-transform: uppercase; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; font-weight: bold; }
         
-        /* FIXED: Text Wrapping Logic for Read-Only Views */
         .paper-body { 
             white-space: pre-wrap; 
-            word-wrap: break-word;      /* Forces text to wrap */
-            overflow-wrap: break-word;  /* Modern standard */
+            word-wrap: break-word;      
+            overflow-wrap: break-word;  
             line-height: 1.6; 
             text-align: justify; 
             font-size: 14px; 
@@ -88,14 +86,13 @@
             cursor: text;
         }
         
-        /* FIXED: Editor Text Wrapping */
         #create-text {
             outline: none;
-            white-space: pre-wrap;      /* Preserves newlines */
-            word-wrap: break-word;      /* Forces wrapping for long words */
-            overflow-wrap: break-word;  /* Modern standard */
+            white-space: pre-wrap;      
+            word-wrap: break-word;      
+            overflow-wrap: break-word;  
             overflow-y: auto;
-            max-width: 100%;            /* Ensures it stays within container */
+            max-width: 100%;            
         }
         #create-text:focus {
             box-shadow: 0 0 0 2px rgba(212,175,55,0.15);
@@ -518,7 +515,6 @@
                 <p id="bio-status" class="text-center text-[10px] font-mono text-[#d4af37] mt-4 hidden">INITIALIZING SCAN...</p>
             </section>
         </div>
-
         <section id="sec-create" class="w-full max-w-6xl glass-panel p-8 rounded-xl hidden fade-in mx-auto mt-10">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
                 <h2 class="text-2xl text-white brand-font">Smart Drafting Studio</h2>
@@ -724,7 +720,7 @@ Each counterparty must enter this key on the main screen in order to access the 
             <p class="text-[10px] text-gray-700 mt-2">© 2025 Essproof Systems. All Rights Reserved.</p>
         </div>
     </footer>
-
+      
        <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAlfX416VJz5rx4rcbQE15FOUAEAf0eFCw",
@@ -752,6 +748,10 @@ Each counterparty must enter this key on the main screen in order to access the 
         let videoBlobCaptured = null;
         let pendingContractData = null;
         let canvas, ctx, isDrawing = false;
+        
+        // --- REAL FORENSIC DATA VARIABLES ---
+        let userRealIP = "Detecting...";
+        let userRealGPS = "Waiting for permission...";
         
         // GLOBAL FOR PAYMENT
         let currentPaymentRaw = 0; 
@@ -995,7 +995,7 @@ Each counterparty must enter this key on the main screen in order to access the 
         
         function generateDocNumber(existingNums=[]){ const used = new Set(existingNums); let num=''; do{ num = Math.floor(10000000 + Math.random() * 90000000).toString(); } while(used.has(num)); return num; }
         
-        window.exportBackup = async function(){ const data = await loadAll(); const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'noteseal-backup.lgl'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Backup exported'); }
+        window.exportBackup = async function(){ const data = await loadAll(); const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'essproof-backup.lgl'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Backup exported'); }
         
         // --- IMPORT FUNCTION ---
         window.importBackup = function(input) {
@@ -1027,8 +1027,33 @@ Each counterparty must enter this key on the main screen in order to access the 
 
         async function computeHash(text){ try{ const enc = new TextEncoder().encode(text); const buf = await crypto.subtle.digest('SHA-256', enc); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase(); }catch(e){ return "0x" + Math.random().toString(16).substr(2, 64).toUpperCase(); } }
         
-        function getMockIP() { return `192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`; }
-        function getMockGPS() { return `${(35 + Math.random()*5).toFixed(4)}° N, ${(30 + Math.random()*5).toFixed(4)}° E`; }
+        // --- REAL FORENSIC DATA CAPTURE ---
+        async function captureForensics() {
+            // 1. Get Real IP
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                userRealIP = data.ip;
+            } catch (e) {
+                console.error("IP Fetch Error", e);
+                userRealIP = "IP_DETECT_FAIL";
+            }
+
+            // 2. Get Real GPS
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userRealGPS = `${position.coords.latitude.toFixed(6)}° N, ${position.coords.longitude.toFixed(6)}° E`;
+                    },
+                    (error) => {
+                        console.error("GPS Error", error);
+                        userRealGPS = "GPS_DENIED_BY_USER";
+                    }
+                );
+            } else {
+                userRealGPS = "GPS_NOT_SUPPORTED";
+            }
+        }
 
         window.initSignaturePad = function() {
             canvas = document.getElementById('sig-canvas'); if(!canvas) return;
@@ -1228,14 +1253,23 @@ Each counterparty must enter this key on the main screen in order to access the 
         };
 
         window.renderRepo = async function(){
-            const tbody = document.getElementById('repo-body'); tbody.innerHTML='<tr><td colspan="6" class="text-center py-4"><i class="fas fa-circle-notch fa-spin text-[#d4af37]"></i> Syncing with Cloud...</td></tr>'; 
+            const tbody = document.getElementById('repo-body'); 
+            tbody.innerHTML='<tr><td colspan="6" class="text-center py-4"><i class="fas fa-circle-notch fa-spin text-[#d4af37]"></i> Syncing with Cloud...</td></tr>'; 
+            
             let rows = await loadAll();
+
+            // *** اصلاح جدید: مرتب‌سازی دقیق زمانی (جدیدترین در بالا) ***
+            // این خط تاریخ ایجاد هر سند را می‌خواند و آن‌ها را مقایسه می‌کند
+            rows.sort((a, b) => new Date(b.created) - new Date(a.created));
+
             tbody.innerHTML=''; 
 
             if(user.nid) { rows = rows.filter(doc => { return doc.parties.some(p => p.nid === user.nid); }); }
             
             const filterTerm = (document.getElementById('repo-filter')?.value || '').toLowerCase();
-            rows = rows.reverse().filter(c => { 
+            
+            // نکته: دستور reverse را برداشتیم چون در بالا sort انجام دادیم
+            rows = rows.filter(c => { 
                 if(!filterTerm) return true; 
                 const typeStr = (c.type || '').toLowerCase();
                 const codeStr = (c.docNumber || '').toString().toLowerCase();
@@ -1321,6 +1355,9 @@ Each counterparty must enter this key on the main screen in order to access the 
 
             const btn = document.getElementById('btn-auth'); btn.innerText = "Scanning..."; document.getElementById('bio-scan-line').style.display = 'block';
             
+            // --- TRIGGER REAL FORENSIC CAPTURE ---
+            captureForensics();
+
             setTimeout(async () => {
                 user.name=n; user.nid=i; user.pin=pin;
                 
@@ -1699,13 +1736,17 @@ Each counterparty must enter this key on the main screen in order to access the 
 
                 const sigDataUrl = document.getElementById('sig-canvas').toDataURL();
                 const method = requiresVideo ? "Biometric Video" : "Standard Digital Signature";
-                document.getElementById('process-status').classList.remove('hidden'); document.getElementById('meta-disp').innerText = `IP: ${getMockIP()} | Auth: ${method}`;
+                
+                // --- USE REAL FORENSIC DATA ---
+                document.getElementById('process-status').classList.remove('hidden'); 
+                document.getElementById('meta-disp').innerText = `IP: ${userRealIP} | Auth: ${method}`;
                 
                 const idx = freshContract.parties.findIndex(p => p.nid === user.nid);
                 if(idx!==-1) {
                     freshContract.parties[idx].signed = true; 
                     freshContract.parties[idx].date = new Date().toUTCString();
-                    freshContract.parties[idx].evidence = {ip:getMockIP(), gps:getMockGPS()}; 
+                    // SAVE REAL DATA TO FIREBASE
+                    freshContract.parties[idx].evidence = {ip: userRealIP, gps: userRealGPS}; 
                     freshContract.parties[idx].signatureImg = sigDataUrl;
                 } else { throw new Error("ID mismatch during sync."); }
 
@@ -1744,6 +1785,5 @@ Each counterparty must enter this key on the main screen in order to access the 
         window.closeVideoModal = function(){ const modal = document.getElementById('modal-video'); const player = document.getElementById('evidence-player'); player.pause(); player.src=""; modal.classList.add('hidden'); modal.classList.remove('flex'); };
 
     </script>
-      </body>
-      </html>
-
+    </body>
+    </html>
