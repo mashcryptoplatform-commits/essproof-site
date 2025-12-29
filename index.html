@@ -158,7 +158,6 @@
             Essproof Systems v2.1<br>Secure. Private. Boundless.
         </div>
     </div>
-
     <!-- NEW: About Us Modal -->
     <div id="modal-about" class="fixed inset-0 bg-black/95 info-modal hidden items-center justify-center p-4">
         <div class="w-full max-w-2xl bg-[#0f172a] p-8 rounded-xl border border-[#d4af37]/30 shadow-2xl relative max-h-[90vh] overflow-y-auto">
@@ -319,7 +318,7 @@
                 <div class="bg-black/30 p-3 rounded border border-white/10 mt-4">
                     <strong class="text-[#d4af37] block mb-2">Supplementary Explanation:</strong>
                     <p class="mb-2"><strong>Express Version (Non-Video):</strong> Fast and professional. Suitable for everyday commercial documents. In this mode, the "Digital Signature" and "Document Text" are registered. Your Date, Time, IP Address, and GPS Location are also captured and noted in the document. No camera required.</p>
-                    <p><strong>Premium Version ( Legal Evidentiary Standard):</strong> In this mode, in addition to the signature, a "Video Certificate" of your face and voice is recorded, in which you declare your intent, will, and consent with full sobriety. Timestamp, IP Address, and GPS Location are also captured and noted.</p>
+                    <p><strong>Premium Version (Highest Legal Evidentiary Standard):</strong> In this mode, in addition to the signature, a "Video Certificate" of your face and voice is recorded, in which you declare your intent, will, and consent with full sobriety. Timestamp, IP Address, and GPS Location are also captured and noted.</p>
                 </div>
 
                 <p class="mt-4">
@@ -367,6 +366,17 @@
                 <p class="mt-4">
                     <strong>Repository Access:</strong> To view signed documents or download them, click the <strong>Repository</strong> (Folder Icon) at the top. Enter your Name, National ID, and the 6-Digit PIN you created. You can print or backup your files there.
                 </p>
+
+                <!-- NEW SECTION: VIDEO WAIVER POLICY -->
+                <div class="bg-red-900/20 border border-red-500/30 p-3 rounded mt-6">
+                    <strong class="text-red-400 block mb-2 uppercase tracking-widest text-[10px]">Important: Video Waiver Policy</strong>
+                    <p>
+                        In Premium (Video-Enabled) contracts, if a participant denies camera access or encounters technical issues, they may choose to proceed with signing without video recording. In this case, the document remains valid and the process continues, but the specific signature will be permanently marked as <strong>"Video Access Waived by User"</strong> on the final instrument.
+                    </p>
+                    <p class="mt-2">
+                        Please note that the service fee is based on the selected plan (Premium) and the user's choice to waive the video feature does not entitle them to a refund or discount, as the platform infrastructure was fully provided.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -842,8 +852,9 @@ Each counterparty must enter this key on the main screen in order to access the 
             </p>
             <p class="text-[10px] text-gray-700 mt-2">© 2025 Essproof Systems. All Rights Reserved.</p>
         </div>
-         </footer>
-         <script>
+    </footer>
+
+       <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAlfX416VJz5rx4rcbQE15FOUAEAf0eFCw",
             authDomain: "essproof-866ef.firebaseapp.com",
@@ -1237,7 +1248,7 @@ Each counterparty must enter this key on the main screen in order to access the 
             const sigContainer = document.getElementById('judge-sigs'); sigContainer.innerHTML = '';
             doc.parties.forEach(p => {
                 const vidKey = `${doc.id}-${p.nid}`;
-                const vidBtn = (p.signed && doc.requiresVideo !== false) ? `<button onclick="openVideoModal('${vidKey}')" class="text-[9px] bg-blue-600 hover:bg-blue-500 text-white border border-blue-400 px-3 py-1 rounded transition flex items-center gap-1 shadow-md"><i class="fas fa-play-circle"></i> Evidence</button>` : `<span class="text-[9px] text-gray-500 italic border border-gray-700 px-2 py-1 rounded">No Video</span>`;
+                const vidBtn = (p.signed && doc.requiresVideo !== false && !p.videoWaived) ? `<button onclick="openVideoModal('${vidKey}')" class="text-[9px] bg-blue-600 hover:bg-blue-500 text-white border border-blue-400 px-3 py-1 rounded transition flex items-center gap-1 shadow-md"><i class="fas fa-play-circle"></i> Evidence</button>` : `<span class="text-[9px] text-gray-500 italic border border-gray-700 px-2 py-1 rounded">${p.videoWaived ? 'VIDEO WAIVED' : 'No Video'}</span>`;
                 const meta = p.evidence || {ip:'N/A', gps:'N/A'};
                 sigContainer.innerHTML += `<div class="border border-white/10 rounded p-3 mb-2 text-xs bg-black/40"><div class="flex justify-between items-center mb-2"><span class="text-white font-bold flex items-center gap-2"><i class="fas fa-user-check text-[#d4af37]"></i> ${p.name}</span><span class="${p.signed?'text-green-400':'text-yellow-500'} font-mono text-[9px] border ${p.signed?'border-green-500/30':'border-yellow-500/30'} px-1 rounded">${p.signed?'VERIFIED':'WAITING'}</span></div><div class="flex justify-between items-end"><div class="grid grid-cols-1 gap-1 text-gray-400 font-mono text-[9px]"><div>ID: <span class="text-gray-300">${p.nid}</span></div><div>IP: <span class="text-blue-300">${meta.ip}</span></div><div>GPS: <span class="text-blue-300">${meta.gps}</span></div></div><div>${vidBtn}</div></div></div>`;
             });
@@ -1246,12 +1257,19 @@ Each counterparty must enter this key on the main screen in order to access the 
 
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
         function generatePaperHTML(doc) {
-            const sigsHTML = doc.parties.map(p => `
+            const sigsHTML = doc.parties.map(p => {
+                let videoStatus = '';
+                if (doc.requiresVideo !== false) {
+                    if (p.videoWaived) videoStatus = '<br><span style="color:red; font-weight:bold; font-size:9px;">[VIDEO WAIVED BY USER]</span>';
+                    else if (p.signed) videoStatus = '<br><span style="color:green; font-size:9px;">[VIDEO SECURED]</span>';
+                }
+                return `
                 <div class="paper-sig-block">
                     ${p.signatureImg ? `<img src="${p.signatureImg}" style="height:40px;display:block;margin-bottom:5px;">` : '<strong>[PENDING]</strong><br>'}
                     <strong>${p.name}</strong><br>ID: ${p.nid}<br>
-                    ${p.signed ? `<span class="meta-data">Date: ${p.date}<br>IP: ${p.evidence?.ip}<br>GPS: ${p.evidence?.gps}</span>` : ''}
-                </div>`).join('');
+                    ${p.signed ? `<span class="meta-data">Date: ${p.date}<br>IP: ${p.evidence?.ip}<br>GPS: ${p.evidence?.gps}${videoStatus}</span>` : ''}
+                </div>`;
+            }).join('');
             const safeText = escapeHtml(doc.text);
             return `<div class="paper-view"><div class="paper-watermark">EssProof</div><div class="paper-header"><h1>EssProof</h1><p style="font-size:10px;text-transform:uppercase;color:#555;">PRIVATE NON-GOVERNMENTAL PLATFORM<br>Secure Digital Instrument Registry</p></div><div class="paper-title">${doc.type}</div><div style="font-size: 10px; margin-bottom: 20px; font-family:monospace;">Ref: ${doc.docNumber} | Mode: ${doc.requiresVideo !== false ? 'Video Shield' : 'Standard Text'}</div><div class="paper-body">${safeText}</div><div class="paper-sigs">${sigsHTML}</div><div class="paper-hash-box"><strong>FINAL CRYPTOGRAPHIC SEAL (SHA-256):</strong><br>${doc.hash || 'NOT FINALIZED'}</div></div>`;
         }
@@ -1440,7 +1458,7 @@ Each counterparty must enter this key on the main screen in order to access the 
             let leftSideHtml = ''; 
             doc.parties.forEach(p=>{
                 const meta = p.evidence || {ip:'Pending', gps:'Pending'}; const vidKey = `${doc.id}-${p.nid}`;
-                const vidBtn = (p.signed && doc.requiresVideo !== false) ? `<button onclick="openVideoModal('${vidKey}')" class="text-[9px] bg-blue-600 hover:bg-blue-500 text-white border border-blue-400 px-3 py-1 rounded transition flex items-center gap-1 shadow-md"><i class="fas fa-play-circle"></i> View Affidavit</button>` : `<span class="text-[9px] text-gray-500 italic border border-gray-700 px-2 py-1 rounded">No Video</span>`;
+                const vidBtn = (p.signed && doc.requiresVideo !== false && !p.videoWaived) ? `<button onclick="openVideoModal('${vidKey}')" class="text-[9px] bg-blue-600 hover:bg-blue-500 text-white border border-blue-400 px-3 py-1 rounded transition flex items-center gap-1 shadow-md"><i class="fas fa-play-circle"></i> View Affidavit</button>` : `<span class="text-[9px] text-gray-500 italic border border-gray-700 px-2 py-1 rounded">${p.videoWaived ? 'VIDEO WAIVED' : 'No Video'}</span>`;
                 leftSideHtml += `<div class="border border-white/10 rounded p-3 mb-2 text-xs bg-black/40"><div class="flex justify-between items-center mb-2"><span class="text-white font-bold flex items-center gap-2"><i class="fas fa-user-check text-[#d4af37]"></i> ${p.name}</span><span class="${p.signed?'text-green-400':'text-yellow-500'} font-mono text-[9px] border ${p.signed?'border-green-500/30':'border-yellow-500/30'} px-1 rounded">${p.signed?'VERIFIED':'WAITING'}</span></div><div class="flex justify-between items-end"><div class="grid grid-cols-1 gap-1 text-gray-400 font-mono text-[9px]"><div>ID: <span class="text-gray-300">${p.nid}</span></div><div>IP: <span class="text-blue-300">${meta.ip}</span></div><div>GPS: <span class="text-blue-300">${meta.gps}</span></div></div><div>${vidBtn}</div></div></div>`;
             });
 
@@ -1748,8 +1766,8 @@ Each counterparty must enter this key on the main screen in order to access the 
                 const vidClass = p.signed ? 'status-gold' : 'status-gray';
                 const sigClass = p.signed ? 'status-gold' : 'status-gray';
                 
-                const vidAction = (p.signed && contract.requiresVideo !== false) ? `onclick="openVideoModal('${vidKey}')"` : '';
-                const videoIconStyle = (contract.requiresVideo === false) ? 'opacity:0.3; cursor:not-allowed;' : '';
+                const vidAction = (p.signed && contract.requiresVideo !== false && !p.videoWaived) ? `onclick="openVideoModal('${vidKey}')"` : '';
+                const videoIconStyle = (contract.requiresVideo === false || p.videoWaived) ? 'opacity:0.3; cursor:not-allowed;' : '';
 
                 const card = `
                     <div class="participant-card ${isMe ? 'active-user' : ''}">
@@ -1824,7 +1842,13 @@ Each counterparty must enter this key on the main screen in order to access the 
                 videoBlobCaptured = null; const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
                 document.getElementById('webcam').srcObject=s; document.getElementById('webcam').classList.remove('hidden'); document.getElementById('cam-placeholder').classList.add('hidden');
                 setupRecorder(s);
-            } catch(e){ showToast('Camera blocked','error',3000); }
+            } catch(e){ 
+                // --- FIX: HANDLE CAMERA DENIAL ---
+                document.getElementById('cam-placeholder').innerHTML = '<div class="text-red-500 text-center"><i class="fas fa-video-slash text-3xl mb-2"></i><br>Camera Denied</div>';
+                const btn = document.getElementById('btn-seal');
+                btn.disabled = false; 
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }
 
         function setupRecorder(stream){
@@ -1845,8 +1869,14 @@ Each counterparty must enter this key on the main screen in order to access the 
         window.finalizeSigSimple = async function() {
             const btn = document.getElementById('btn-seal');
             const requiresVideo = contract.requiresVideo !== false;
+            let videoSkipped = false;
 
-            if(requiresVideo && !videoBlobCaptured) { alert("Video evidence required."); return; }
+            if(requiresVideo && !videoBlobCaptured) { 
+                const proceed = confirm("CAMERA ERROR OR DENIED:\n\nWe could not record your video affidavit.\n\nDo you want to proceed with a STANDARD DIGITAL SIGNATURE only?\n\n(Note: Your signature block will explicitly state 'Video Waived by User'.)");
+                if(!proceed) return;
+                videoSkipped = true;
+            }
+            
             if(!contract) { alert("Contract data missing."); return; }
             
             try {
@@ -1857,7 +1887,7 @@ Each counterparty must enter this key on the main screen in order to access the 
                 let freshContract = snapshot.val();
 
                 const sigDataUrl = document.getElementById('sig-canvas').toDataURL();
-                const method = requiresVideo ? "Biometric Video" : "Standard Digital Signature";
+                const method = (requiresVideo && !videoSkipped) ? "Biometric Video" : "Standard Digital Signature";
                 
                 // --- USE REAL FORENSIC DATA ---
                 document.getElementById('process-status').classList.remove('hidden'); 
@@ -1870,9 +1900,10 @@ Each counterparty must enter this key on the main screen in order to access the 
                     // SAVE REAL DATA TO FIREBASE
                     freshContract.parties[idx].evidence = {ip: userRealIP, gps: userRealGPS}; 
                     freshContract.parties[idx].signatureImg = sigDataUrl;
+                    freshContract.parties[idx].videoWaived = videoSkipped; // Save waiver status
                 } else { throw new Error("ID mismatch during sync."); }
 
-                if(requiresVideo && videoBlobCaptured) {
+                if(requiresVideo && videoBlobCaptured && !videoSkipped) {
                     await saveVideoToDB(`${freshContract.id}-${user.nid}`, videoBlobCaptured);
                 }
                 
